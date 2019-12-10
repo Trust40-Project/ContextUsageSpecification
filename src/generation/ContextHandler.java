@@ -10,6 +10,7 @@ import org.palladiosimulator.pcm.dataprocessing.dataprocessing.characteristics.E
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.context.Context;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.context.ContextCharacteristic;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.context.ContextCharacteristicType;
+import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
 import sun.java2d.pipe.hw.ContextCapabilities;
 import util.MyLogger;
@@ -17,8 +18,11 @@ import util.DataProcessingPrinter;
 
 public class ContextHandler {
     private final DataSpecification dataSpec;
-    public ContextHandler(final DataSpecification dataSpec) {
+    private final UsageModel usageModel;
+    
+    public ContextHandler(final DataSpecification dataSpec, final UsageModel usageModel) {
         this.dataSpec = dataSpec;
+        this.usageModel = usageModel;
     }
 
 	public void execute() {

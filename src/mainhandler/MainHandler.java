@@ -2,16 +2,10 @@ package mainhandler;
 
 import java.util.Objects;
 
-import org.eclipse.core.commands.AbstractHandler;
-import org.eclipse.core.commands.ExecutionEvent;
-import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.ui.PlatformUI;
 import org.palladiosimulator.pcm.dataprocessing.dataprocessing.DataSpecification;
-
+import org.palladiosimulator.pcm.usagemodel.UsageModel;
 import generation.ContextHandler;
 import util.MyLogger;
-import util.Util;
 
 public class MainHandler {
 	//TODO needed?
@@ -21,10 +15,10 @@ public class MainHandler {
         Objects.requireNonNull(dataPath);
                         
         ModelHandler modelloader = new ModelHandler(dataPath);
-        DataSpecification dataSpec = modelloader.loadDataSpecification();
-        
-        final ContextHandler ch = new ContextHandler(dataSpec);
-        
+        DataSpecification dataSpec = modelloader.loadDataSpecification();        
+		UsageModel usageModel = modelloader.loadUsageModel();
+                
+        final ContextHandler ch = new ContextHandler(dataSpec, usageModel);        
         ch.execute();
         
         modelloader.saveDataSpecification();

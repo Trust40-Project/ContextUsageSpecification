@@ -4,22 +4,26 @@ import java.io.File;
 
 //TODO refactor name
 public class Util {
-	private final static String pathDataprocessing= "E:\\Praktikum\\ContextUsageSpecificationUseCase\\usecase1\\My.dataprocessing";
+	private final static String pathDataprocessing = "E:\\Praktikum\\ContextUsageSpecificationUseCase\\usecase1\\My.dataprocessing";
+	private final static String pathUsageModel = "E:\\Praktikum\\ContextUsageSpecificationUseCase\\usecase1\\newUsageModel.usagemodel";
 	
 	//TODO add functionality
     public static String getDataprocessingPath() {
     	return pathDataprocessing;
     }
+	public static String getUsageModelPath() {
+		return pathUsageModel;
+	}
 
 	//TODO describe what happens here
-    public static String getIdOfModel(final String pathDataprocessing) {
+    public static String getIdOfModel(final String fullPath) {
         final StringBuilder id = new StringBuilder();
         
         final char dirDelim = File.separatorChar;
         boolean add = false;
         boolean done = false;
-        for (int i = pathDataprocessing.length() - 1; i >= 0; i--) {
-            final char now = pathDataprocessing.charAt(i);
+        for (int i = fullPath.length() - 1; i >= 0; i--) {
+            final char now = fullPath.charAt(i);
             if (!done && !add && now == dirDelim) {
                 add = true;
             } else if (add && now == dirDelim) {

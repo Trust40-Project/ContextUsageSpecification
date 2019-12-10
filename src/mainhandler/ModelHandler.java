@@ -12,15 +12,15 @@ import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.palladiosimulator.pcm.dataprocessing.dataprocessing.DataSpecification;
 import org.palladiosimulator.pcm.dataprocessing.dataprocessing.DataprocessingPackage;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.DynamicextensionPackage;
+import org.palladiosimulator.pcm.usagemodel.UsageModel;
+import org.palladiosimulator.pcm.usagemodel.UsagemodelPackage;
 
 import util.MyLogger;
+import util.Util;
 
 public class ModelHandler {
     private String pathDataprocessing;
     private ResourceSet resourceSet;
-    private Registry resourceRegistry;
-
-    //TODO any other resources needed? dynExt?
     private Resource resourceData;
 
     public ModelHandler(final String pathDataprocessing) {
@@ -29,11 +29,12 @@ public class ModelHandler {
         
         DataprocessingPackage.eINSTANCE.eClass();
         DynamicextensionPackage.eINSTANCE.eClass();
-        this.resourceRegistry = Resource.Factory.Registry.INSTANCE;
+        UsagemodelPackage.eINSTANCE.eClass();
+        Registry resourceRegistry = Resource.Factory.Registry.INSTANCE;
         
-        final Map<String, Object> map = this.resourceRegistry.getExtensionToFactoryMap();
+        final Map<String, Object> map = resourceRegistry.getExtensionToFactoryMap();
         map.put("*", new XMIResourceFactoryImpl());
-        this.resourceSet.setResourceFactoryRegistry(this.resourceRegistry);
+        this.resourceSet.setResourceFactoryRegistry(resourceRegistry);
     }
     
     public DataSpecification loadDataSpecification() {
@@ -41,7 +42,7 @@ public class ModelHandler {
         
         //resourceData.setTrackingModification(true);
         
-        //Throw exception if > 1
+        //TODO Throw exception if > 1 or cast fails
         return (DataSpecification) resourceData.getContents().get(0);
     }
     
@@ -55,9 +56,15 @@ public class ModelHandler {
     		}
     	}
     }
-    
-    //TODO put directly in other function?
+
+	public UsageModel loadUsageModel() {
+        resourceData = loadResource(this.resourceSet, Util.getUsageModelPath());
+
+        //TODO Throw exception if > 1 or cast fails
+		return (UsageModel) resourceData.getContents().get(0);
+	}  
+	
     private Resource loadResource(final ResourceSet resourceSet, final String path) {
         return resourceSet.getResource(URI.createFileURI(path), true);
-    }  
+    }
 }
