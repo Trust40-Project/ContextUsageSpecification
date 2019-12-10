@@ -11,7 +11,9 @@ import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.palladiosimulator.pcm.dataprocessing.dataprocessing.DataSpecification;
 import org.palladiosimulator.pcm.dataprocessing.dataprocessing.DataprocessingPackage;
+import org.palladiosimulator.pcm.dataprocessing.dataprocessing.repository.RepositoryPackage;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.DynamicextensionPackage;
+import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 import org.palladiosimulator.pcm.usagemodel.UsagemodelPackage;
 
@@ -29,6 +31,7 @@ public class ModelHandler {
         
         DataprocessingPackage.eINSTANCE.eClass();
         DynamicextensionPackage.eINSTANCE.eClass();
+        org.palladiosimulator.pcm.repository.RepositoryPackage.eINSTANCE.eClass();
         UsagemodelPackage.eINSTANCE.eClass();
         Registry resourceRegistry = Resource.Factory.Registry.INSTANCE;
         
@@ -63,6 +66,13 @@ public class ModelHandler {
         //TODO Throw exception if > 1 or cast fails
 		return (UsageModel) resourceData.getContents().get(0);
 	}  
+
+	public Repository loadRepositoryModel() {
+        resourceData = loadResource(this.resourceSet, Util.getRepositoryModelPath());
+
+        //TODO Throw exception if > 1 or cast fails
+		return (Repository) resourceData.getContents().get(0);
+	} 
 	
     private Resource loadResource(final ResourceSet resourceSet, final String path) {
         return resourceSet.getResource(URI.createFileURI(path), true);

@@ -6,6 +6,7 @@ import java.io.File;
 public class Util {
 	private final static String pathDataprocessing = "E:\\Praktikum\\ContextUsageSpecificationUseCase\\usecase1\\My.dataprocessing";
 	private final static String pathUsageModel = "E:\\Praktikum\\ContextUsageSpecificationUseCase\\usecase1\\newUsageModel.usagemodel";
+	private final static String pathRepositoryModel = "E:\\Praktikum\\ContextUsageSpecificationUseCase\\usecase1\\newRepository.repository";
 	
 	//TODO add functionality
     public static String getDataprocessingPath() {
@@ -13,6 +14,9 @@ public class Util {
     }
 	public static String getUsageModelPath() {
 		return pathUsageModel;
+	}
+	public static String getRepositoryModelPath() {
+		return pathRepositoryModel;
 	}
 
 	//TODO describe what happens here
