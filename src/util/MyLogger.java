@@ -5,9 +5,10 @@ import org.eclipse.ui.PlatformUI;
 
 public class MyLogger {
 	//TODO use diffenret logger
-    public static final Logger LOGGER = PlatformUI.getWorkbench().getService(Logger.class);
+    //public static final Logger LOGGER = PlatformUI.getWorkbench().getService(Logger.class);
 
 	public void info(String string) {
-		LOGGER.info(string);		
+		//LOGGER.info(string);
+		System.out.println(string);
 	}
 }

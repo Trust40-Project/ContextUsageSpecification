@@ -23,7 +23,7 @@ public class MainHandler extends AbstractHandler {
 	public Object execute(ExecutionEvent event) throws ExecutionException {
         Objects.requireNonNull(event);
         
-        logger.info("test");
+        logger.info("Start");
         
         final String dataPath = Util.getDataprocessingPath();        
         logger.info(dataPath);
@@ -31,11 +31,16 @@ public class MainHandler extends AbstractHandler {
         final String id = Util.getIdOfModel(dataPath);        
         logger.info(id);
         
-        ModelLoader modelloader = new ModelLoader(dataPath);
+        ModelHandler modelloader = new ModelHandler(dataPath, logger);
         DataSpecification dataContainer = modelloader.loadDataSpecification();
         
-        //final ContextHandler ch = new ContextHandler(id, dataContainer, logger);
-        //ch.createPolicySet();
+        final ContextHandler ch = new ContextHandler(id, dataContainer, logger);
+        ch.printInfo();
+        
+        modelloader.saveDataSpecification();
+        
+        
+        logger.info("End");
         
         return null;
 	}
