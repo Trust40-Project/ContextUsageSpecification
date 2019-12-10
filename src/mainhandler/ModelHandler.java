@@ -20,13 +20,11 @@ public class ModelHandler {
     private ResourceSet resourceSet;
     private Registry resourceRegistry;
 
-	private final MyLogger logger;
     //TODO any other resources needed? dynExt?
     private Resource resourceData;
 
-    public ModelHandler(final String pathDataprocessing, MyLogger logger) {
+    public ModelHandler(final String pathDataprocessing) {
 		this.pathDataprocessing = pathDataprocessing;
-        this.logger = logger;
         this.resourceSet = new ResourceSetImpl();
         
         DataprocessingPackage.eINSTANCE.eClass();
@@ -41,24 +39,21 @@ public class ModelHandler {
     public DataSpecification loadDataSpecification() {
         resourceData = loadResource(this.resourceSet, this.pathDataprocessing);
         
-        resourceData.setTrackingModification(true);
+        //resourceData.setTrackingModification(true);
         
         //Throw exception if > 1
         return (DataSpecification) resourceData.getContents().get(0);
     }
     
     public void saveDataSpecification() {
-    	logger.info("SaveData");
-    	logger.info("" + resourceData.isLoaded());
-    	logger.info("" + resourceData.isModified());
-    	logger.info("" + resourceData.isTrackingModification());
-    	
-    	try {
-			resourceData.save(null);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+    	if(resourceData.isModified()) {
+        	try {
+    			resourceData.save(null);
+    		} catch (IOException e) {
+    			// TODO Auto-generated catch block
+    			e.printStackTrace();
+    		}
+    	}
     }
     
     //TODO put directly in other function?

@@ -5,7 +5,6 @@ import java.io.File;
 //TODO refactor name
 public class Util {
 	private final static String pathDataprocessing= "E:\\Praktikum\\ContextUsageSpecificationUseCase\\usecase1\\My.dataprocessing";
-	//private final static String pathDataprocessing= "C:\\Users\\Thomas\\workspace-palladiobench\\__test\\My.dataprocessing";
 	
 	//TODO add functionality
     public static String getDataprocessingPath() {

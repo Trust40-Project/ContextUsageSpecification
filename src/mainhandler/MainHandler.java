@@ -13,35 +13,20 @@ import generation.ContextHandler;
 import util.MyLogger;
 import util.Util;
 
-public class MainHandler extends AbstractHandler {
+public class MainHandler {
 	//TODO needed?
     //public static final boolean IS_ECLIPSE_RUNNING = Platform.isRunning();
     
-	private MyLogger logger = new MyLogger();
-
-	@Override
-	public Object execute(ExecutionEvent event) throws ExecutionException {
-        Objects.requireNonNull(event);
+	public void execute(String dataPath) {
+        Objects.requireNonNull(dataPath);
+                        
+        ModelHandler modelloader = new ModelHandler(dataPath);
+        DataSpecification dataSpec = modelloader.loadDataSpecification();
         
-        logger.info("Start");
+        final ContextHandler ch = new ContextHandler(dataSpec);
         
-        final String dataPath = Util.getDataprocessingPath();        
-        logger.info(dataPath);
-        
-        final String id = Util.getIdOfModel(dataPath);        
-        logger.info(id);
-        
-        ModelHandler modelloader = new ModelHandler(dataPath, logger);
-        DataSpecification dataContainer = modelloader.loadDataSpecification();
-        
-        final ContextHandler ch = new ContextHandler(id, dataContainer, logger);
-        ch.printInfo();
+        ch.execute();
         
         modelloader.saveDataSpecification();
-        
-        
-        logger.info("End");
-        
-        return null;
 	}
 }

@@ -7,7 +7,20 @@ public class MyLogger {
 	//TODO use diffenret logger
     //public static final Logger LOGGER = PlatformUI.getWorkbench().getService(Logger.class);
 
-	public void info(String string) {
+	private static MyLogger instance = null;	
+
+	public static MyLogger getInstance() {
+		if(instance == null) {
+			instance = new MyLogger();
+		}
+		return instance;
+	}
+	
+	public static void info(String string) {
+		getInstance().println(string);
+	}
+	
+	private void println(String string) {
 		//LOGGER.info(string);
 		System.out.println(string);
 	}
