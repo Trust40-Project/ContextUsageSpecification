@@ -20,7 +20,7 @@ public class MainHandler {
 		UsageModel usageModel = modelloader.loadUsageModel();    
 		Repository repo = modelloader.loadRepositoryModel();
                 
-        final ContextHandler ch = new ContextHandler(dataSpec, usageModel);        
+        final ContextHandler ch = new ContextHandler(dataSpec, usageModel, repo);        
         ch.execute();
         
         modelloader.saveDataSpecification();

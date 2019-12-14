@@ -4,19 +4,20 @@ import java.io.File;
 
 //TODO refactor name
 public class Util {
-	private final static String pathDataprocessing = "E:\\Praktikum\\ContextUsageSpecificationUseCase\\usecase1\\My.dataprocessing";
-	private final static String pathUsageModel = "E:\\Praktikum\\ContextUsageSpecificationUseCase\\usecase1\\newUsageModel.usagemodel";
-	private final static String pathRepositoryModel = "E:\\Praktikum\\ContextUsageSpecificationUseCase\\usecase1\\newRepository.repository";
+	private final static String pathProject = "C:\\Users\\T440s\\Praktikum\\ContextUsageSpecificationUseCase\\usecase1\\";
+	private final static String pathDataprocessing = "My.dataprocessing";
+	private final static String pathUsageModel = "newUsageModel.usagemodel";
+	private final static String pathRepositoryModel = "newRepository.repository";
 	
 	//TODO add functionality
     public static String getDataprocessingPath() {
-    	return pathDataprocessing;
+    	return pathProject + pathDataprocessing;
     }
 	public static String getUsageModelPath() {
-		return pathUsageModel;
+		return pathProject + pathUsageModel;
 	}
 	public static String getRepositoryModelPath() {
-		return pathRepositoryModel;
+		return pathProject + pathRepositoryModel;
 	}
 
 	//TODO describe what happens here
