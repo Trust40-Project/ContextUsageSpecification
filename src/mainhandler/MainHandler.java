@@ -4,8 +4,9 @@ import java.util.Objects;
 
 import org.palladiosimulator.pcm.dataprocessing.dataprocessing.DataSpecification;
 import org.palladiosimulator.pcm.repository.Repository;
-import org.palladiosimulator.pcm.usagemodel.UsageModel;
 import org.palladiosimulator.pcm.system.System;
+import org.palladiosimulator.pcm.usagemodel.UsageModel;
+
 import generation.ContextHandler;
 
 public class MainHandler {

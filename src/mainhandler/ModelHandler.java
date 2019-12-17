@@ -22,12 +22,12 @@ import org.palladiosimulator.pcm.usagemodel.UsagemodelPackage;
 import util.Util;
 
 public class ModelHandler {
-    private String pathDataprocessing;
+    private String path;
     private ResourceSet resourceSet;
     private Resource resourceData;
 
-    public ModelHandler(final String pathDataprocessing) {
-		this.pathDataprocessing = pathDataprocessing;
+    public ModelHandler(final String path) {
+		this.path = path;
         this.resourceSet = new ResourceSetImpl();
         
         DataprocessingPackage.eINSTANCE.eClass();
@@ -44,7 +44,7 @@ public class ModelHandler {
     }
     
     public DataSpecification loadDataSpecification() {
-        resourceData = loadResource(this.resourceSet, this.pathDataprocessing);
+        resourceData = loadResource(this.resourceSet, Util.getDataprocessingPath());
         
         //resourceData.setTrackingModification(true);
         

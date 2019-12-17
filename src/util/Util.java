@@ -1,50 +1,41 @@
 package util;
 
 import java.io.File;
+import java.util.Enumeration;
+import java.util.Properties;
+
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
 
 //TODO refactor name
 public class Util {
-	private final static String pathProject = "E:\\Praktikum\\UseCasesTechnicalReport\\UC-ContextUsageSpecification\\usecase1\\";
-	private final static String pathDataprocessing = "My.dataprocessing";
-	private final static String pathUsageModel = "newUsageModel.usagemodel";
-	private final static String pathAssembly = "newAssembly.system";
-	private final static String pathRepositoryModel = "newRepository.repository";
+	private final static String pathDataprocessing = "/My.dataprocessing";
+	private final static String pathUsageModel = "/newUsageModel.usagemodel";
+	private final static String pathAssembly = "/newAssembly.system";
+	private final static String pathRepositoryModel = "/newRepository.repository";
 	
 	//TODO add functionality
     public static String getDataprocessingPath() {
-    	return pathProject + pathDataprocessing;
+    	return getCurrentDir() + pathDataprocessing;
     }
 	public static String getUsageModelPath() {
-		return pathProject + pathUsageModel;
+		return getCurrentDir() + pathUsageModel;
 	}
 	public static String getRepositoryModelPath() {
-		return pathProject + pathRepositoryModel;
+		return getCurrentDir() + pathRepositoryModel;
 	}
 	public static String getAssemblyPath() {
-		return pathProject + pathAssembly;
+		return getCurrentDir() + pathAssembly;
 	}
-
-	//TODO describe what happens here
-    public static String getIdOfModel(final String fullPath) {
-        final StringBuilder id = new StringBuilder();
-        
-        final char dirDelim = File.separatorChar;
-        boolean add = false;
-        boolean done = false;
-        for (int i = fullPath.length() - 1; i >= 0; i--) {
-            final char now = fullPath.charAt(i);
-            if (!done && !add && now == dirDelim) {
-                add = true;
-            } else if (add && now == dirDelim) {
-                add = false;
-                done = true;
-            }
-            
-            if (add) {
-                id.append(now);
-            }
-        }
-        
-        return id.reverse().substring(0, id.length() - 1);
-    }
+	
+	public static String getCurrentDir() {
+		IWorkspace ws = ResourcesPlugin.getWorkspace();
+		IWorkspaceRoot wsr = ws.getRoot();
+		for(IProject p : wsr.getProjects()) {
+			return p.getLocation().toString();
+		}
+		return "";
+	}
 }

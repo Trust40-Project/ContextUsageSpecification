@@ -20,14 +20,13 @@ public class ButtonHandler extends AbstractHandler {
         Objects.requireNonNull(event);
         
         MyLogger.info("ButtonHandler-Start");
-        
-        final String dataPath = Util.getDataprocessingPath();        
-        MyLogger.info(dataPath);
-        final String id = Util.getIdOfModel(dataPath);        
-        MyLogger.info(id);
+
+    	//TODO do properly, currently use active workspace, only 1 project allowed
+        final String currentPath = Util.getCurrentDir();        
+        MyLogger.info(currentPath);
         
         //Call Mainhandler with datapath
-        new MainHandler().execute(dataPath);
+        new MainHandler().execute(currentPath);
 
         MyLogger.info("ButtonHandler-End");
         
