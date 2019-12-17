@@ -7,6 +7,9 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.modelversioning.emfprofile.Stereotype;
 import org.palladiosimulator.mdsdprofiles.api.StereotypeAPI;
+import org.palladiosimulator.pcm.core.composition.AssemblyContext;
+import org.palladiosimulator.pcm.core.composition.Connector;
+import org.palladiosimulator.pcm.core.composition.ProvidedDelegationConnector;
 import org.palladiosimulator.pcm.core.entity.InterfaceProvidingEntity;
 import org.palladiosimulator.pcm.dataprocessing.dataprocessing.DataSpecification;
 import org.palladiosimulator.pcm.dataprocessing.dataprocessing.characteristics.Characteristic;
@@ -14,21 +17,21 @@ import org.palladiosimulator.pcm.dataprocessing.dataprocessing.characteristics.C
 import org.palladiosimulator.pcm.dataprocessing.dataprocessing.characteristics.CharacteristicType;
 import org.palladiosimulator.pcm.dataprocessing.dataprocessing.characteristics.CharacteristicTypeContainer;
 import org.palladiosimulator.pcm.dataprocessing.dataprocessing.characteristics.RelatedCharacteristics;
-import org.palladiosimulator.pcm.dataprocessing.dataprocessing.characteristics.impl.CharacteristicContainerImpl;
 import org.palladiosimulator.pcm.dataprocessing.dataprocessing.processing.DataProcessingContainer;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.context.Context;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.context.ContextCharacteristic;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.context.ContextCharacteristicType;
 import org.palladiosimulator.pcm.repository.BasicComponent;
+import org.palladiosimulator.pcm.repository.OperationProvidedRole;
 import org.palladiosimulator.pcm.repository.OperationSignature;
 import org.palladiosimulator.pcm.repository.ProvidedRole;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.repository.RepositoryComponent;
 import org.palladiosimulator.pcm.seff.AbstractAction;
 import org.palladiosimulator.pcm.seff.InternalAction;
-import org.palladiosimulator.pcm.seff.ResourceDemandingInternalBehaviour;
 import org.palladiosimulator.pcm.seff.ResourceDemandingSEFF;
 import org.palladiosimulator.pcm.seff.ServiceEffectSpecification;
+import org.palladiosimulator.pcm.system.System;
 import org.palladiosimulator.pcm.usagemodel.AbstractUserAction;
 import org.palladiosimulator.pcm.usagemodel.EntryLevelSystemCall;
 import org.palladiosimulator.pcm.usagemodel.ScenarioBehaviour;
@@ -42,11 +45,13 @@ public class ContextHandler {
     private final DataSpecification dataSpec;
     private final UsageModel usageModel;
 	private final Repository repo;
+	private final System system;
     
-    public ContextHandler(final DataSpecification dataSpec, final UsageModel usageModel, final Repository repo) {
+    public ContextHandler(final DataSpecification dataSpec, final UsageModel usageModel, final Repository repo, final System system) {
         this.dataSpec = dataSpec;
         this.usageModel = usageModel;
         this.repo = repo;
+        this.system = system;
     }
 
     public void execute() {
@@ -111,6 +116,36 @@ public class ContextHandler {
     		MyLogger.info("\nAppling Context to all methods");    	
         	for (EntryLevelSystemCall elsc : listOfSystemCalls) {	
         		MyLogger.info(elsc.getEntityName());     
+        		OperationProvidedRole opr = elsc.getProvidedRole_EntryLevelSystemCall();
+        		MyLogger.info(opr.getEntityName());    
+        		OperationSignature op = elsc.getOperationSignature__EntryLevelSystemCall();
+        		MyLogger.info(op.getEntityName());           		
+        		
+            	//Find Component by iterating connectors, check outer role with system call
+        		//Still pass operation signature to know which function is called
+            	for (Connector c : system.getConnectors__ComposedStructure()) {
+            		MyLogger.info(c.getEntityName());
+            		if(c instanceof ProvidedDelegationConnector) {
+            			ProvidedDelegationConnector pdc = (ProvidedDelegationConnector) c;
+            			if(pdc.getOuterProvidedRole_ProvidedDelegationConnector() == opr) {
+                    		MyLogger.info(pdc.getAssemblyContext_ProvidedDelegationConnector().getEntityName());
+                    		AssemblyContext ac = pdc.getAssemblyContext_ProvidedDelegationConnector();
+                    		RepositoryComponent rc = ac.getEncapsulatedComponent__AssemblyContext();
+                    		MyLogger.info(rc.getEntityName());
+                    		if(rc instanceof BasicComponent) {
+                        		applyContextsToBasicComponent((BasicComponent)rc, op, umcc);
+                    		}           else {
+                    			//TODO other cases
+                        		MyLogger.info("TODO!!!");
+                    		}
+            			}
+            		}
+            	}
+        		
+        		
+        		//WRONG
+        		/*
+        		MyLogger.info(elsc.getEntityName());     
         		OperationSignature op = elsc.getOperationSignature__EntryLevelSystemCall();
         		MyLogger.info(op.getEntityName());   
         		
@@ -123,46 +158,52 @@ public class ContextHandler {
                 		
                 		//TODO instance of
                 		BasicComponent bc = (BasicComponent) ipe;
-                		
-                    	for (ServiceEffectSpecification seff : bc.getServiceEffectSpecifications__BasicComponent()) {
-                    		MyLogger.info(seff.getDescribedService__SEFF().getEntityName());   
-                    		if(seff.getDescribedService__SEFF() == op) {
-                        		MyLogger.info("MATCH");     
-                        		
-                        		//TODO instance of. other cases allowed?
-                        		ResourceDemandingSEFF rdSeff = (ResourceDemandingSEFF) seff;
-                        		
-                        		//Get all internal actions, and check applied data processing
-                        		for (AbstractAction aa : rdSeff.getSteps_Behaviour()) {
-                        			if(aa instanceof InternalAction) {
-                        				InternalAction ia = (InternalAction) aa;
-
-                        		    	EList<Stereotype> stl3 = StereotypeAPI.getAppliedStereotypes(ia);
-                        		    	Stereotype st3 = stl3.get(0);
-                        		    	MyLogger.info(st3.getName());
-                        		    	Collection<EStructuralFeature> list3 =  StereotypeAPI.getParameters(st3);
-                        		    	for (EStructuralFeature esf : list3) {
-
-                        		    		String name = esf.getName();
-                        		        	MyLogger.info(name);
-                        		        	Object obj = StereotypeAPI.getTaggedValue(ia, name, st3.getName());
-                        		        	if(obj != null ) {
-                        		            	MyLogger.info(obj.getClass().getSimpleName());   
-                        		            	DataProcessingContainer dpc = (DataProcessingContainer) obj;
-                        		            	applyContexts(dpc, umcc);
-                        		        	}
-                        		    	}
-                        			}    
-                        		}
-                        		
-                    		}
-                    	}
+                		applyContextsToBasicComponent(bc, op, umcc);
                 	}    
             	}
+            	*/
         	}
     	}
     }
     
+    //Seach for operationSignature in BasicComponent, and apply Contexts of CharacteristicsContainer
+    public void applyContextsToBasicComponent(BasicComponent bc, OperationSignature op, CharacteristicContainer umcc) {		
+    	for (ServiceEffectSpecification seff : bc.getServiceEffectSpecifications__BasicComponent()) {
+    		MyLogger.info(seff.getDescribedService__SEFF().getEntityName());   
+    		if(seff.getDescribedService__SEFF() == op) {
+        		MyLogger.info("MATCH");     
+        		
+        		//TODO instance of. other cases allowed?
+        		ResourceDemandingSEFF rdSeff = (ResourceDemandingSEFF) seff;
+        		
+        		//Get all internal actions, and check applied data processing
+        		for (AbstractAction aa : rdSeff.getSteps_Behaviour()) {
+        			if(aa instanceof InternalAction) {
+        				InternalAction ia = (InternalAction) aa;
+
+        		    	EList<Stereotype> stl3 = StereotypeAPI.getAppliedStereotypes(ia);
+        		    	Stereotype st3 = stl3.get(0);
+        		    	MyLogger.info(st3.getName());
+        		    	Collection<EStructuralFeature> list3 =  StereotypeAPI.getParameters(st3);
+        		    	for (EStructuralFeature esf : list3) {
+
+        		    		String name = esf.getName();
+        		        	MyLogger.info(name);
+        		        	Object obj = StereotypeAPI.getTaggedValue(ia, name, st3.getName());
+        		        	if(obj != null ) {
+        		            	MyLogger.info(obj.getClass().getSimpleName());   
+        		            	DataProcessingContainer dpc = (DataProcessingContainer) obj;
+        		            	applyContexts(dpc, umcc);
+        		        	}
+        		    	}
+        			}    
+        		}
+        		
+    		}
+    	}
+    }
+    
+    //Apply Contexts to CharacteristicContainer related to dpc, from reference CharacteristicContainer cc
 	public void applyContexts(DataProcessingContainer dpc, CharacteristicContainer cc) {
 		MyLogger.info("\nApply Context");   
 		new DataProcessingPrinter(dataSpec).printDataProcessing();

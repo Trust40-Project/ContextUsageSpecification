@@ -4,9 +4,10 @@ import java.io.File;
 
 //TODO refactor name
 public class Util {
-	private final static String pathProject = "C:\\Users\\T440s\\Praktikum\\ContextUsageSpecificationUseCase\\usecase1\\";
+	private final static String pathProject = "E:\\Praktikum\\UseCasesTechnicalReport\\UC-ContextUsageSpecification\\usecase1\\";
 	private final static String pathDataprocessing = "My.dataprocessing";
 	private final static String pathUsageModel = "newUsageModel.usagemodel";
+	private final static String pathAssembly = "newAssembly.system";
 	private final static String pathRepositoryModel = "newRepository.repository";
 	
 	//TODO add functionality
@@ -18,6 +19,9 @@ public class Util {
 	}
 	public static String getRepositoryModelPath() {
 		return pathProject + pathRepositoryModel;
+	}
+	public static String getAssemblyPath() {
+		return pathProject + pathAssembly;
 	}
 
 	//TODO describe what happens here

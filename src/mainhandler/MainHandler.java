@@ -5,8 +5,8 @@ import java.util.Objects;
 import org.palladiosimulator.pcm.dataprocessing.dataprocessing.DataSpecification;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
+import org.palladiosimulator.pcm.system.System;
 import generation.ContextHandler;
-import util.MyLogger;
 
 public class MainHandler {
 	//TODO needed?
@@ -19,8 +19,9 @@ public class MainHandler {
         DataSpecification dataSpec = modelloader.loadDataSpecification();        
 		UsageModel usageModel = modelloader.loadUsageModel();    
 		Repository repo = modelloader.loadRepositoryModel();
+		System system = modelloader.loadAssemblyModel();
                 
-        final ContextHandler ch = new ContextHandler(dataSpec, usageModel, repo);        
+        final ContextHandler ch = new ContextHandler(dataSpec, usageModel, repo, system);        
         ch.execute();
         
         modelloader.saveDataSpecification();
