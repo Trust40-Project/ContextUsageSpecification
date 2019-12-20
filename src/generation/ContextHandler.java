@@ -16,6 +16,7 @@ import org.palladiosimulator.pcm.dataprocessing.dataprocessing.characteristics.C
 import org.palladiosimulator.pcm.dataprocessing.dataprocessing.characteristics.CharacteristicContainer;
 import org.palladiosimulator.pcm.dataprocessing.dataprocessing.characteristics.CharacteristicType;
 import org.palladiosimulator.pcm.dataprocessing.dataprocessing.characteristics.CharacteristicTypeContainer;
+import org.palladiosimulator.pcm.dataprocessing.dataprocessing.characteristics.Characterizable;
 import org.palladiosimulator.pcm.dataprocessing.dataprocessing.characteristics.RelatedCharacteristics;
 import org.palladiosimulator.pcm.dataprocessing.dataprocessing.processing.DataProcessingContainer;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.context.Context;
@@ -55,113 +56,74 @@ public class ContextHandler {
     }
 
     public void execute() {
+    	//TODO select correct model, or make loop
     	UsageScenario us = usageModel.getUsageScenario_UsageModel().get(0);
     	ScenarioBehaviour sb = us.getScenarioBehaviour_UsageScenario();
     	MyLogger.info(sb.getEntityName());    
     	
-    	//TODO catch exception no stereotype applied
-    	//TODO get correct applied stereotype with instance of, also for all other similar cases
-    	EList<Stereotype> stl = StereotypeAPI.getApplicableStereotypes(sb);
-    	MyLogger.info("Size:" + stl.size());
-    	Stereotype st = stl.get(0);
-    	MyLogger.info(st.getName());
-
-    	EList<Stereotype> stl2 = StereotypeAPI.getAppliedStereotypes(sb);
-    	MyLogger.info("Size2:" + stl2.size());
-    	Stereotype st2 = stl2.get(0);
-    	MyLogger.info(st2.getName());
-    	
-    	//Get list of all operations called inside usage model   
-    	EList<EntryLevelSystemCall> listOfSystemCalls = new BasicEList<>();
-    	for (AbstractUserAction aue : sb.getActions_ScenarioBehaviour()) {
-			MyLogger.info("ActionName:" + aue.getEntityName());    		
-			MyLogger.info("Class:" + aue.getClass());
-			if(aue instanceof EntryLevelSystemCall) {
-				EntryLevelSystemCall elsc = (EntryLevelSystemCall) aue;
-				listOfSystemCalls.add(elsc);
-			}
-    	}
-    	 	
-    	//Get cc of usage model 
-    	CharacteristicContainer umcc = null;
-    	
-    	Collection<EStructuralFeature> list =  StereotypeAPI.getParameters(st2);
-    	for (EStructuralFeature esf : list) {
-    		String name = esf.getName();
-        	MyLogger.info(name);
-        	Object obj = StereotypeAPI.getTaggedValue(sb, name, st2.getName());
-        	if(obj != null ) {
-            	MyLogger.info(obj.getClass().getSimpleName());   
-            	CharacteristicContainer cc = (CharacteristicContainer) obj;
-    			MyLogger.info("Name:" + cc.getEntityName());
-    	    	for (Characteristic c : cc.getOwnedCharacteristics()) {
-    				MyLogger.info("Type:" + c.getCharacteristicType());
-    				
-    				if(c instanceof ContextCharacteristic) {
-    			    	for (Context context : ((ContextCharacteristic) c).getContext()) {
-    						MyLogger.info("Context:" + context.getEntityName());
-    			    	}					
-    				}
-    	    	}
-    	    	
-    	    	umcc = cc;
-            	
-        	}     else {
-        		MyLogger.info("null");
-        	}
-    	}    
-    	
-    	
-    	if(umcc != null) {    		
-    		MyLogger.info("\nAppling Context to all methods");    	
-        	for (EntryLevelSystemCall elsc : listOfSystemCalls) {	
-        		MyLogger.info(elsc.getEntityName());     
-        		OperationProvidedRole opr = elsc.getProvidedRole_EntryLevelSystemCall();
-        		MyLogger.info(opr.getEntityName());    
-        		OperationSignature op = elsc.getOperationSignature__EntryLevelSystemCall();
-        		MyLogger.info(op.getEntityName());           		
-        		
-            	//Find Component by iterating connectors, check outer role with system call
-        		//Still pass operation signature to know which function is called
-            	for (Connector c : system.getConnectors__ComposedStructure()) {
-            		MyLogger.info(c.getEntityName());
-            		if(c instanceof ProvidedDelegationConnector) {
-            			ProvidedDelegationConnector pdc = (ProvidedDelegationConnector) c;
-            			if(pdc.getOuterProvidedRole_ProvidedDelegationConnector() == opr) {
-                    		MyLogger.info(pdc.getAssemblyContext_ProvidedDelegationConnector().getEntityName());
-                    		AssemblyContext ac = pdc.getAssemblyContext_ProvidedDelegationConnector();
-                    		RepositoryComponent rc = ac.getEncapsulatedComponent__AssemblyContext();
-                    		MyLogger.info(rc.getEntityName());
-                    		if(rc instanceof BasicComponent) {
-                        		applyContextsToBasicComponent((BasicComponent)rc, op, umcc);
-                    		}           else {
-                    			//TODO other cases
-                        		MyLogger.info("TODO!!!");
-                    		}
-            			}
-            		}
-            	}
-        		
-        		
-        		//WRONG
-        		/*
-        		MyLogger.info(elsc.getEntityName());     
-        		OperationSignature op = elsc.getOperationSignature__EntryLevelSystemCall();
-        		MyLogger.info(op.getEntityName());   
-        		
-        		//Find all matching internal actions
-        		//First find matching operation signature in basic component
-            	for (RepositoryComponent rc : repo.getComponents__Repository()) {
-                	for (ProvidedRole pr : rc.getProvidedRoles_InterfaceProvidingEntity()) {
-                		InterfaceProvidingEntity ipe = pr.getProvidingEntity_ProvidedRole();  
-                		MyLogger.info(ipe.getEntityName());     
-                		
-                		//TODO instance of
-                		BasicComponent bc = (BasicComponent) ipe;
-                		applyContextsToBasicComponent(bc, op, umcc);
-                	}    
-            	}
-            	*/
+    	//Iterate applied stereotypes, look for Characterizable
+    	for (Stereotype stereotype : StereotypeAPI.getAppliedStereotypes(sb)) {
+        	MyLogger.info(stereotype.getName());    
+        	
+        	//TODO proper cast or check to Characterizable
+			if((stereotype.getName().equals("Characterizable"))) {
+		    	for (EStructuralFeature esf : StereotypeAPI.getParameters(stereotype)) {
+		    		String name = esf.getName();
+		        	Object obj = StereotypeAPI.getTaggedValue(sb, name, stereotype.getName());
+		        	if(obj instanceof CharacteristicContainer ) {
+		            	CharacteristicContainer cc = (CharacteristicContainer) obj;
+		    	    	
+		    	    	//Get list of all operations called inside usage model   
+		    	    	EList<EntryLevelSystemCall> listOfSystemCalls = new BasicEList<>();
+		    	    	for (AbstractUserAction aue : sb.getActions_ScenarioBehaviour()) {
+		    				MyLogger.info("ActionName:" + aue.getEntityName());    		
+		    				MyLogger.info("Class:" + aue.getClass());
+		    				if(aue instanceof EntryLevelSystemCall) {
+		    					EntryLevelSystemCall elsc = (EntryLevelSystemCall) aue;
+		    					listOfSystemCalls.add(elsc);
+		    				}
+		    	    	}
+		    	    	
+		    	    	applyContextToAllSystemCalls(cc, listOfSystemCalls);
+		            	
+		        	} else {
+		        		MyLogger.info("CharacteristicContainer not selected");
+		        	}
+		    	}   
+			} else {
+        		MyLogger.info("Stereotype Characterizable not applied");
+			}			
+		}
+    }
+    
+    public void applyContextToAllSystemCalls(CharacteristicContainer cc, EList<EntryLevelSystemCall> listOfSystemCalls) {   
+		MyLogger.info("\nAppling Context to all methods");    	
+    	for (EntryLevelSystemCall elsc : listOfSystemCalls) {	
+    		MyLogger.info(elsc.getEntityName());     
+    		OperationProvidedRole opr = elsc.getProvidedRole_EntryLevelSystemCall();
+    		MyLogger.info(opr.getEntityName());    
+    		OperationSignature op = elsc.getOperationSignature__EntryLevelSystemCall();
+    		MyLogger.info(op.getEntityName());           		
+    		
+        	//Find Component by iterating connectors, check outer role with system call
+    		//Still pass operation signature to know which function is called
+        	for (Connector c : system.getConnectors__ComposedStructure()) {
+        		MyLogger.info(c.getEntityName());
+        		if(c instanceof ProvidedDelegationConnector) {
+        			ProvidedDelegationConnector pdc = (ProvidedDelegationConnector) c;
+        			if(pdc.getOuterProvidedRole_ProvidedDelegationConnector() == opr) {
+                		MyLogger.info(pdc.getAssemblyContext_ProvidedDelegationConnector().getEntityName());
+                		AssemblyContext ac = pdc.getAssemblyContext_ProvidedDelegationConnector();
+                		RepositoryComponent rc = ac.getEncapsulatedComponent__AssemblyContext();
+                		MyLogger.info(rc.getEntityName());
+                		if(rc instanceof BasicComponent) {
+                    		applyContextsToBasicComponent((BasicComponent)rc, op, cc);
+                		}           else {
+                			//TODO other cases
+                    		MyLogger.info("TODO!!!");
+                		}
+        			}
+        		}
         	}
     	}
     }
