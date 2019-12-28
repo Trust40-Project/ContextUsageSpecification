@@ -57,4 +57,18 @@ public class DataSpecificationAbstraction {
     	}
 		return list;
 	}
+
+	//TODO check contexttype first
+	public Context getContextByName(CharacteristicContainer cc, String name) {	
+		for (ContextCharacteristic c : getContextCharacteristic(cc)) { 		
+			for (Context context : c.getContext()) 	
+    		{
+        		if(context.getEntityName().equalsIgnoreCase(name))
+        		{
+        			return context;
+        		}
+    		}
+    	}
+		return null;
+	}
 }

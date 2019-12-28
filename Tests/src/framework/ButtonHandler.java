@@ -21,7 +21,7 @@ public class ButtonHandler extends AbstractHandler {
         Objects.requireNonNull(event);
         
         MyLogger.info("Tests-Start");
-        MyLogger.disable();
+        //MyLogger.disable();
 
         JUnitCore junit = new JUnitCore(); 
         junit.addListener(new TextListener(System.out)); 

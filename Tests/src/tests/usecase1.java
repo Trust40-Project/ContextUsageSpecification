@@ -1,11 +1,12 @@
 package tests;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 import org.palladiosimulator.pcm.dataprocessing.dataprocessing.DataSpecification;
 import org.palladiosimulator.pcm.dataprocessing.dataprocessing.characteristics.CharacteristicContainer;
+import org.palladiosimulator.pcm.dataprocessing.dynamicextension.context.Context;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.system.System;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
@@ -37,16 +38,26 @@ public class usecase1 {
 		final ContextHandler ch = new ContextHandler(dataSpec, usageModel, repo, system);    
 		DataSpecificationAbstraction dataSpecAbs = new DataSpecificationAbstraction(dataSpec);
 		
-		//TODO better option that static string?
 		CharacteristicContainer sys = dataSpecAbs.getCharacteristicContainerByName("SystemCall1");
 		CharacteristicContainer method = dataSpecAbs.getCharacteristicContainerByName("method1");      
 		assertNotNull(sys);
 		assertNotNull(method);
-		//TODO
+
+		Context c_sys = dataSpecAbs.getContextByName(sys, "high");  
+		Context c_method = dataSpecAbs.getContextByName(method, "aname");   
+		Context c_method2 = dataSpecAbs.getContextByName(method, "high");     
+		assertNotNull(c_sys);
+		assertNotNull(c_method);
+		assertNull(c_method2);
 		
-		ch.execute();
-		
-		//TODO
+		ch.execute();		
+
+		c_sys = dataSpecAbs.getContextByName(sys, "high");  
+		c_method = dataSpecAbs.getContextByName(method, "aname");    
+		c_method2 = dataSpecAbs.getContextByName(method, "high");  
+		assertNotNull(c_sys);
+		assertNotNull(c_method);
+		assertNotNull(c_method2);
 		
 	}
 
