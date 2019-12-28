@@ -22,12 +22,12 @@ import org.palladiosimulator.pcm.usagemodel.UsagemodelPackage;
 import util.Util;
 
 public class ModelHandler {
-    private String path;
     private ResourceSet resourceSet;
     private Resource resourceData;
+	private ModelAbstraction model;
 
     public ModelHandler(final String path) {
-		this.path = path;
+		this.model = new ModelAbstraction(path);
         this.resourceSet = new ResourceSetImpl();
         
         DataprocessingPackage.eINSTANCE.eClass();
@@ -44,7 +44,7 @@ public class ModelHandler {
     }
     
     public DataSpecification loadDataSpecification() {
-        resourceData = loadResource(this.resourceSet, Util.getDataprocessingPath());
+        resourceData = loadResource(this.resourceSet, model.getDataprocessingPath());
         
         //resourceData.setTrackingModification(true);
         
@@ -64,21 +64,21 @@ public class ModelHandler {
     }
 
 	public UsageModel loadUsageModel() {
-        resourceData = loadResource(this.resourceSet, Util.getUsageModelPath());
+        resourceData = loadResource(this.resourceSet, model.getUsageModelPath());
 
         //TODO Throw exception if > 1 or cast fails
 		return (UsageModel) resourceData.getContents().get(0);
 	}  
 
 	public Repository loadRepositoryModel() {
-        resourceData = loadResource(this.resourceSet, Util.getRepositoryModelPath());
+        resourceData = loadResource(this.resourceSet, model.getRepositoryModelPath());
 
         //TODO Throw exception if > 1 or cast fails
 		return (Repository) resourceData.getContents().get(0);
 	} 
 
 	public System loadAssemblyModel() {
-        resourceData = loadResource(this.resourceSet, Util.getAssemblyPath());
+        resourceData = loadResource(this.resourceSet, model.getAssemblyPath());
 
         //TODO Throw exception if > 1 or cast fails
 		return (System) resourceData.getContents().get(0);

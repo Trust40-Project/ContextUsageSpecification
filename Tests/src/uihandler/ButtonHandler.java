@@ -7,6 +7,7 @@ import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 
+import mainhandler.MainHandler;
 import util.MyLogger;
 import util.Util;
 
@@ -23,7 +24,7 @@ public class ButtonHandler extends AbstractHandler {
         MyLogger.info(currentPath);
         
         //Call Mainhandler with datapath
-        //new MainHandler().execute(currentPath);
+        new MainHandler().execute(currentPath);
 
         MyLogger.info("Tests-End");
         
