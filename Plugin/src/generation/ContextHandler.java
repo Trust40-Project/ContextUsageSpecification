@@ -43,14 +43,12 @@ import util.MyLogger;
 import util.DataProcessingPrinter;
 
 public class ContextHandler {
-    private final DataSpecification dataSpec;
 	private final DataSpecificationAbstraction dataSpecAbs;
     private final UsageModel usageModel;
 	private final Repository repo;
 	private final System system;
     
     public ContextHandler(final DataSpecification dataSpec, final UsageModel usageModel, final Repository repo, final System system) {
-        this.dataSpec = dataSpec;
         this.dataSpecAbs = new DataSpecificationAbstraction(dataSpec);
         this.usageModel = usageModel;
         this.repo = repo;
@@ -170,57 +168,18 @@ public class ContextHandler {
     //Apply Contexts to CharacteristicContainer related to dpc, from reference CharacteristicContainer cc
 	public void applyContexts(DataProcessingContainer dpc, CharacteristicContainer cc) {
 		MyLogger.info("\nApply Context");   
-		new DataProcessingPrinter(dataSpec).printDataProcessing();
+		new DataProcessingPrinter(dataSpecAbs.getDataSpec()).printDataProcessing();
 		
 		//Get cc from dpc
-		CharacteristicContainer cc2 = null;
-    	for (RelatedCharacteristics rc : dataSpec.getRelatedCharacteristics()) {
-    		if(rc.getRelatedEntity() == dpc) {    			
-    			cc2 = rc.getCharacteristics(); 
-    			//TODO more than 1 possible? for each match
-    			break;
-    		}
-    	}
-
-		//Iterate all context, apply each to dpc
-    	for (Characteristic c : cc.getOwnedCharacteristics()) {
-    		//TODO get correct characteristic (what is correct?)    		
-			if(c instanceof ContextCharacteristic) {
-				EList<Context> cl =((ContextCharacteristic) c).getContext();	
-				
-				
-				
-				//TODO handle properly	
-				if(cc2.getOwnedCharacteristics().get(0) instanceof ContextCharacteristic) {
-					MyLogger.info("MATCH2"); 
-					ContextCharacteristic ccc = (ContextCharacteristic) cc2.getOwnedCharacteristics().get(0);
-					ccc.getContext().addAll(cl);
-				}				
-			}
-    	}    	
-		new DataProcessingPrinter(dataSpec).printDataProcessing();
-	}
-	
-	public void executeDummy() {
-		new DataProcessingPrinter(dataSpec).printDataProcessing();
-				
-		//TODO iterate	
-		CharacteristicContainer cc = dataSpec.getCharacteristicContainer().get(0);
-		Characteristic characteristic = cc.getOwnedCharacteristics().get(0);
-		CharacteristicTypeContainer ctc = dataSpec.getCharacteristicTypeContainers().get(0);
-		CharacteristicType ct = ctc.getCharacteristicTypes().get(1);
+		CharacteristicContainer cc2 = dataSpecAbs.getCharacteristicContainerForDataProcessingContainer(dpc);
 		
-		if(characteristic instanceof ContextCharacteristic) {
-			MyLogger.info("ContextCharacteristic");
-			ContextCharacteristic conc = (ContextCharacteristic) characteristic;
-			
-			if(ct instanceof ContextCharacteristicType)
-			{
-				MyLogger.info("ContextCharacteristicType");
-				conc.getContext().addAll(((ContextCharacteristicType) ct).getContext());
-			}
-		}
-
-		new DataProcessingPrinter(dataSpec).printDataProcessing();
+		//Iterate all context, apply each to dpc
+    	for (ContextCharacteristic c : dataSpecAbs.getContextCharacteristic(cc)) {
+        	for (ContextCharacteristic c2 : dataSpecAbs.getContextCharacteristic(cc2)) {
+        		//TODO add filter for "correct" contexttype?
+        		c2.getContext().addAll(c.getContext());
+        	}
+    	}    	
+		new DataProcessingPrinter(dataSpecAbs.getDataSpec()).printDataProcessing();
 	}
 }
