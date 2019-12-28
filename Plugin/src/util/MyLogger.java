@@ -7,7 +7,8 @@ public class MyLogger {
 	//TODO use diffenret logger
     //public static final Logger LOGGER = PlatformUI.getWorkbench().getService(Logger.class);
 
-	private static MyLogger instance = null;	
+	private static MyLogger instance = null;
+	private static boolean isActive = true;
 
 	public static MyLogger getInstance() {
 		if(instance == null) {
@@ -22,6 +23,9 @@ public class MyLogger {
 	
 	private void println(String string) {
 		//LOGGER.info(string);
-		System.out.println(string);
+		if(isActive) System.out.println(string);
 	}
+	
+	public static void disable() {isActive = false;};
+	public static void enable() {isActive = true;};
 }

@@ -44,12 +44,14 @@ import util.DataProcessingPrinter;
 
 public class ContextHandler {
     private final DataSpecification dataSpec;
+	private final DataSpecificationAbstraction dataSpecAbs;
     private final UsageModel usageModel;
 	private final Repository repo;
 	private final System system;
     
     public ContextHandler(final DataSpecification dataSpec, final UsageModel usageModel, final Repository repo, final System system) {
         this.dataSpec = dataSpec;
+        this.dataSpecAbs = new DataSpecificationAbstraction(dataSpec);
         this.usageModel = usageModel;
         this.repo = repo;
         this.system = system;

@@ -10,7 +10,7 @@ import org.junit.internal.TextListener;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 
-import tests.SimpleTest;
+import tests.usecase1;
 import util.MyLogger;
 
 
@@ -21,18 +21,13 @@ public class ButtonHandler extends AbstractHandler {
         Objects.requireNonNull(event);
         
         MyLogger.info("Tests-Start");
-
-    	//TODO do properly, currently use active workspace, only 1 project allowed
-//        final String currentPath = Util.getCurrentDir();        
-//        MyLogger.info(currentPath);
-//        
-//        //Call Mainhandler with datapath
-//        new MainHandler().execute(currentPath);
+        MyLogger.disable();
 
         JUnitCore junit = new JUnitCore(); 
         junit.addListener(new TextListener(System.out)); 
-        junit.run(SimpleTest.class);
+        junit.run(usecase1.class);
 
+        MyLogger.enable();
         MyLogger.info("Tests-End");
         
         return null;
