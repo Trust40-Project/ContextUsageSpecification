@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: ContextUsageSpecificationTests
+Bundle-SymbolicName: ContextUsageSpecificationTests;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Automatic-Module-Name: ContextUsageSpecificationTests
+Require-Bundle: ContextUsageSpecification;bundle-version="1.0.0",
+ org.eclipse.core.commands,
+ org.eclipse.ui;bundle-version="3.114.0"
