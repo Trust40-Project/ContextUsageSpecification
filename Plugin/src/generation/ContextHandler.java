@@ -87,11 +87,11 @@ public class ContextHandler {
 		    	    	applyContextToAllSystemCalls(cc, listOfSystemCalls);
 		            	
 		        	} else {
-		        		MyLogger.info("CharacteristicContainer not selected");
+		        		MyLogger.error("CharacteristicContainer not selected");
 		        	}
 		    	}   
 			} else {
-        		MyLogger.info("Stereotype Characterizable not applied");
+        		MyLogger.error("Stereotype Characterizable not applied");
 			}			
 		}
     }
@@ -120,12 +120,14 @@ public class ContextHandler {
                     		applyContextsToBasicComponent((BasicComponent)rc, op, cc);
                 		}           else {
                 			//TODO other cases
-                    		MyLogger.info("TODO!!!");
+                    		MyLogger.error("TODO!!!");
                 		}
         			}
         			else {
                 		MyLogger.info("WRONG");
         			}
+        		} else {
+            		MyLogger.error("TODO2!!!");        			
         		}
         	}
     	}
@@ -146,20 +148,26 @@ public class ContextHandler {
         			if(aa instanceof InternalAction) {
         				InternalAction ia = (InternalAction) aa;
 
-        		    	EList<Stereotype> stl3 = StereotypeAPI.getAppliedStereotypes(ia);
-        		    	Stereotype st3 = stl3.get(0);
-        		    	MyLogger.info(st3.getName());
-        		    	Collection<EStructuralFeature> list3 =  StereotypeAPI.getParameters(st3);
-        		    	for (EStructuralFeature esf : list3) {
+        		    	for (Stereotype stereotype : StereotypeAPI.getAppliedStereotypes(ia)) {
+            		    	MyLogger.info(stereotype.getName());
+            	        	//TODO proper cast or check to DataProcessingSpecification
+            				if((stereotype.getName().equals("DataProcessingSpecification"))) {
+                		    	Collection<EStructuralFeature> list =  StereotypeAPI.getParameters(stereotype);
+                		    	for (EStructuralFeature esf : list) {
 
-        		    		String name = esf.getName();
-        		        	MyLogger.info(name);
-        		        	Object obj = StereotypeAPI.getTaggedValue(ia, name, st3.getName());
-        		        	if(obj != null ) {
-        		            	MyLogger.info(obj.getClass().getSimpleName());   
-        		            	DataProcessingContainer dpc = (DataProcessingContainer) obj;
-        		            	applyContexts(dpc, umcc);
-        		        	}
+                		    		String name = esf.getName();
+                		        	MyLogger.info(name);
+                		        	Object obj = StereotypeAPI.getTaggedValue(ia, name, stereotype.getName());
+                		        	if(obj != null ) {
+                		            	MyLogger.info(obj.getClass().getSimpleName());   
+                		            	DataProcessingContainer dpc = (DataProcessingContainer) obj;
+                		            	applyContexts(dpc, umcc);
+                		        	}
+                		        	else {
+                                		MyLogger.error("Stereotype applied put no dataprocessing container selected!");
+                		        	}
+                		    	}
+            				}
         		    	}
         			}    
         		}

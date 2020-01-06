@@ -17,6 +17,10 @@ public class MyLogger {
 		return instance;
 	}
 	
+	public static void error(String string) {
+		getInstance().println(string);
+	}
+	
 	public static void info(String string) {
 		getInstance().println(string);
 	}
