@@ -181,6 +181,9 @@ public class ContextHandler {
         	for (ContextCharacteristic c2 : dataSpecAbs.getContextCharacteristic(cc2)) {
         		//TODO add filter for "correct" contexttype?
         		c2.getContext().addAll(c.getContext());
+        		MyLogger.info2("Apply:" + cc.getEntityName() + " to " + cc2.getEntityName());
+        		MyLogger.info2("Contexts applied:" + c.getContext().toString());
+        		MyLogger.info2("Contexts after:" + c2.getContext().toString());
         	}
     	}    	
 		new DataProcessingPrinter(dataSpecAbs.getDataSpec()).printDataProcessing();

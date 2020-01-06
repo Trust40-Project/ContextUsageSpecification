@@ -20,14 +20,21 @@ public class ButtonHandler extends AbstractHandler {
         Objects.requireNonNull(event);
         
         MyLogger.info("ButtonHandler-Start");
+        MyLogger.disable();
 
     	//TODO do properly, currently use active workspace, only 1 project allowed
-        final String currentPath = Util.getCurrentDir();        
-        MyLogger.info(currentPath);
+        //final String currentPath = Util.getCurrentDir();        
+        //MyLogger.info(currentPath);
         
         //Call Mainhandler with datapath
-        new MainHandler().execute(currentPath);
+        //new MainHandler().execute(currentPath);
+        
+        for (String path : Util.getAllDir()) {
+        	MyLogger.info2(path);
+        	new MainHandler().execute(path);
+		}
 
+        MyLogger.enable();
         MyLogger.info("ButtonHandler-End");
         
         return null;

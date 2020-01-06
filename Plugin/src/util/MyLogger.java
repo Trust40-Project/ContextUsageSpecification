@@ -20,11 +20,18 @@ public class MyLogger {
 	public static void info(String string) {
 		getInstance().println(string);
 	}
-	
 	private void println(String string) {
 		//LOGGER.info(string);
 		if(isActive) System.out.println(string);
 	}
+	
+	public static void info2(String string) {
+		getInstance().println2(string);		
+	}
+	private void println2(String string) {
+		//LOGGER.info(string);
+		System.out.println(string);
+	}	
 	
 	public static void disable() {isActive = false;};
 	public static void enable() {isActive = true;};
