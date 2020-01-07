@@ -7,6 +7,7 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.modelversioning.emfprofile.Stereotype;
 import org.palladiosimulator.mdsdprofiles.api.StereotypeAPI;
+import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.Connector;
 import org.palladiosimulator.pcm.core.composition.ProvidedDelegationConnector;
@@ -24,11 +25,13 @@ import org.palladiosimulator.pcm.dataprocessing.dynamicextension.context.Context
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.context.ContextCharacteristicType;
 import org.palladiosimulator.pcm.repository.BasicComponent;
 import org.palladiosimulator.pcm.repository.OperationProvidedRole;
+import org.palladiosimulator.pcm.repository.OperationRequiredRole;
 import org.palladiosimulator.pcm.repository.OperationSignature;
 import org.palladiosimulator.pcm.repository.ProvidedRole;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.repository.RepositoryComponent;
 import org.palladiosimulator.pcm.seff.AbstractAction;
+import org.palladiosimulator.pcm.seff.ExternalCallAction;
 import org.palladiosimulator.pcm.seff.InternalAction;
 import org.palladiosimulator.pcm.seff.ResourceDemandingSEFF;
 import org.palladiosimulator.pcm.seff.ServiceEffectSpecification;
@@ -117,7 +120,7 @@ public class ContextHandler {
                 		RepositoryComponent rc = ac.getEncapsulatedComponent__AssemblyContext();
                 		MyLogger.info(rc.getEntityName());
                 		if(rc instanceof BasicComponent) {
-                    		applyContextsToBasicComponent((BasicComponent)rc, op, cc);
+                    		applyContextsToBasicComponent(ac, (BasicComponent)rc, op, cc);
                 		}           else {
                 			//TODO other cases
                     		MyLogger.error("TODO!!!");
@@ -134,7 +137,7 @@ public class ContextHandler {
     }
     
     //Seach for operationSignature in BasicComponent, and apply Contexts of CharacteristicsContainer
-    public void applyContextsToBasicComponent(BasicComponent bc, OperationSignature op, CharacteristicContainer umcc) {		
+    public void applyContextsToBasicComponent(AssemblyContext bcac, BasicComponent bc, OperationSignature op, CharacteristicContainer umcc) {		
     	for (ServiceEffectSpecification seff : bc.getServiceEffectSpecifications__BasicComponent()) {
     		MyLogger.info(seff.getDescribedService__SEFF().getEntityName());   
     		if(seff.getDescribedService__SEFF() == op) {
@@ -146,33 +149,62 @@ public class ContextHandler {
         		//Get all internal actions, and check applied data processing
         		for (AbstractAction aa : rdSeff.getSteps_Behaviour()) {
         			if(aa instanceof InternalAction) {
-        				InternalAction ia = (InternalAction) aa;
+        				applyContextsToInternalCall ((InternalAction) aa, umcc);
 
-        		    	for (Stereotype stereotype : StereotypeAPI.getAppliedStereotypes(ia)) {
-            		    	MyLogger.info(stereotype.getName());
-            	        	//TODO proper cast or check to DataProcessingSpecification
-            				if((stereotype.getName().equals("DataProcessingSpecification"))) {
-                		    	Collection<EStructuralFeature> list =  StereotypeAPI.getParameters(stereotype);
-                		    	for (EStructuralFeature esf : list) {
+        			} else if(aa instanceof ExternalCallAction) {
+        				ExternalCallAction eca = (ExternalCallAction) aa;
+                		MyLogger.info(eca.getEntityName());  
+                		MyLogger.info(eca.getCalledService_ExternalService().getEntityName());  
+                		OperationSignature op2 = eca.getCalledService_ExternalService();
+                		OperationRequiredRole orr = eca.getRole_ExternalService();
+                		MyLogger.info(orr.getEntityName());  
+                		MyLogger.info(orr.getRequiredInterface__OperationRequiredRole().getEntityName());  
 
-                		    		String name = esf.getName();
-                		        	MyLogger.info(name);
-                		        	Object obj = StereotypeAPI.getTaggedValue(ia, name, stereotype.getName());
-                		        	if(obj != null ) {
-                		            	MyLogger.info(obj.getClass().getSimpleName());   
-                		            	DataProcessingContainer dpc = (DataProcessingContainer) obj;
-                		            	applyContexts(dpc, umcc);
-                		        	}
-                		        	else {
-                                		MyLogger.error("Stereotype applied put no dataprocessing container selected!");
-                		        	}
-                		    	}
-            				}
-        		    	}
-        			}    
-        		}
-        		
+                    	for (Connector c : system.getConnectors__ComposedStructure()) {
+                    		if(c instanceof AssemblyConnector) {
+                        		MyLogger.info(c.getEntityName());    
+                        		AssemblyConnector ac = (AssemblyConnector) c;
+                        		AssemblyContext acProvide = ac.getProvidingAssemblyContext_AssemblyConnector();
+                        		AssemblyContext acRequire = ac.getRequiringAssemblyContext_AssemblyConnector();
+                        		if(acRequire.equals(bcac)) {
+                        			OperationRequiredRole orr2 = ac.getRequiredRole_AssemblyConnector();                        			
+                        			if(orr2.equals(orr)) {                            			
+                                		RepositoryComponent rc = acProvide.getEncapsulatedComponent__AssemblyContext();
+                                		MyLogger.info(rc.getEntityName());
+                                		if(rc instanceof BasicComponent) {
+                                    		applyContextsToBasicComponent(acProvide, (BasicComponent)rc, op2, umcc);
+                                		}                         				
+                        			}                            		
+                        		}
+                    		}
+                    	}
+        			}
+        		}        		
     		}
+    	}
+    }
+    
+    public void applyContextsToInternalCall(InternalAction ia, CharacteristicContainer umcc) {
+    	for (Stereotype stereotype : StereotypeAPI.getAppliedStereotypes(ia)) {
+	    	MyLogger.info(stereotype.getName());
+        	//TODO proper cast or check to DataProcessingSpecification
+			if((stereotype.getName().equals("DataProcessingSpecification"))) {
+		    	Collection<EStructuralFeature> list =  StereotypeAPI.getParameters(stereotype);
+		    	for (EStructuralFeature esf : list) {
+
+		    		String name = esf.getName();
+		        	MyLogger.info(name);
+		        	Object obj = StereotypeAPI.getTaggedValue(ia, name, stereotype.getName());
+		        	if(obj != null ) {
+		            	MyLogger.info(obj.getClass().getSimpleName());   
+		            	DataProcessingContainer dpc = (DataProcessingContainer) obj;
+		            	applyContexts(dpc, umcc);
+		        	}
+		        	else {
+                		MyLogger.error("Stereotype applied put no dataprocessing container selected!");
+		        	}
+		    	}
+			}
     	}
     }
     
