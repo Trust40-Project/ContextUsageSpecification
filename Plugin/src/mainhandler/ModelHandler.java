@@ -19,71 +19,69 @@ import org.palladiosimulator.pcm.system.SystemPackage;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 import org.palladiosimulator.pcm.usagemodel.UsagemodelPackage;
 
-import util.Util;
-
 public class ModelHandler {
     private ResourceSet resourceSet;
     private Resource resourceData;
-	private ModelAbstraction model;
+    private ModelAbstraction model;
 
     public ModelHandler(final String path) {
-		this.model = new ModelAbstraction(path);
+        this.model = new ModelAbstraction(path);
         this.resourceSet = new ResourceSetImpl();
-        
+
         DataprocessingPackage.eINSTANCE.eClass();
         DynamicextensionPackage.eINSTANCE.eClass();
         RepositoryPackage.eINSTANCE.eClass();
         UsagemodelPackage.eINSTANCE.eClass();
         SystemPackage.eINSTANCE.eClass();
-        
+
         Registry resourceRegistry = Resource.Factory.Registry.INSTANCE;
-        
+
         final Map<String, Object> map = resourceRegistry.getExtensionToFactoryMap();
         map.put("*", new XMIResourceFactoryImpl());
         this.resourceSet.setResourceFactoryRegistry(resourceRegistry);
     }
-    
+
     public DataSpecification loadDataSpecification() {
         resourceData = loadResource(this.resourceSet, model.getDataprocessingPath());
-        
-        //resourceData.setTrackingModification(true);
-        
-        //TODO Throw exception if > 1 or cast fails
+
+        // resourceData.setTrackingModification(true);
+
+        // TODO Throw exception if > 1 or cast fails
         return (DataSpecification) resourceData.getContents().get(0);
     }
-    
+
     public void saveDataSpecification() {
-    	if(resourceData.isModified()) {
-        	try {
-    			resourceData.save(null);
-    		} catch (IOException e) {
-    			// TODO Auto-generated catch block
-    			e.printStackTrace();
-    		}
-    	}
+        if (resourceData.isModified()) {
+            try {
+                resourceData.save(null);
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
     }
 
-	public UsageModel loadUsageModel() {
+    public UsageModel loadUsageModel() {
         resourceData = loadResource(this.resourceSet, model.getUsageModelPath());
 
-        //TODO Throw exception if > 1 or cast fails
-		return (UsageModel) resourceData.getContents().get(0);
-	}  
+        // TODO Throw exception if > 1 or cast fails
+        return (UsageModel) resourceData.getContents().get(0);
+    }
 
-	public Repository loadRepositoryModel() {
+    public Repository loadRepositoryModel() {
         resourceData = loadResource(this.resourceSet, model.getRepositoryModelPath());
 
-        //TODO Throw exception if > 1 or cast fails
-		return (Repository) resourceData.getContents().get(0);
-	} 
+        // TODO Throw exception if > 1 or cast fails
+        return (Repository) resourceData.getContents().get(0);
+    }
 
-	public System loadAssemblyModel() {
+    public System loadAssemblyModel() {
         resourceData = loadResource(this.resourceSet, model.getAssemblyPath());
 
-        //TODO Throw exception if > 1 or cast fails
-		return (System) resourceData.getContents().get(0);
-	} 
-	
+        // TODO Throw exception if > 1 or cast fails
+        return (System) resourceData.getContents().get(0);
+    }
+
     private Resource loadResource(final ResourceSet resourceSet, final String path) {
         return resourceSet.getResource(URI.createFileURI(path), true);
     }
