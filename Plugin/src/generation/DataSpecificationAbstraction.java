@@ -10,6 +10,8 @@ import org.palladiosimulator.pcm.dataprocessing.dataprocessing.processing.DataPr
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.context.Context;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.context.ContextCharacteristic;
 
+import util.MyLogger;
+
 public class DataSpecificationAbstraction {
     private final DataSpecification dataSpec;
 
@@ -63,5 +65,23 @@ public class DataSpecificationAbstraction {
             }
         }
         return null;
+    }
+
+    public void applyContext(ContextCharacteristic applyTo, ContextCharacteristic applyFrom) {
+        applyTo.getContext().addAll(applyFrom.getContext());
+        MyLogger.info2("Contexts applied:" + applyFrom.getContext().toString());
+        MyLogger.info2("Contexts after:" + applyTo.getContext().toString());
+    }
+
+    public void createContextCharacteristic(CharacteristicContainer container,
+            ContextCharacteristic characteristicData) {
+
+        MyContextCharacteristicImpl newContextCharacteristic = new MyContextCharacteristicImpl();
+
+        newContextCharacteristic.setCharacteristicType(characteristicData.getCharacteristicType());
+
+        applyContext(newContextCharacteristic, characteristicData);
+
+        container.getOwnedCharacteristics().add(newContextCharacteristic);
     }
 }

@@ -5,11 +5,7 @@ import java.util.Objects;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.ui.PlatformUI;
-import org.palladiosimulator.pcm.dataprocessing.dataprocessing.DataSpecification;
 
-import generation.ContextHandler;
 import util.MyLogger;
 import util.Util;
 

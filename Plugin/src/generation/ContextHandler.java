@@ -11,23 +11,14 @@ import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.Connector;
 import org.palladiosimulator.pcm.core.composition.ProvidedDelegationConnector;
-import org.palladiosimulator.pcm.core.entity.InterfaceProvidingEntity;
 import org.palladiosimulator.pcm.dataprocessing.dataprocessing.DataSpecification;
-import org.palladiosimulator.pcm.dataprocessing.dataprocessing.characteristics.Characteristic;
 import org.palladiosimulator.pcm.dataprocessing.dataprocessing.characteristics.CharacteristicContainer;
-import org.palladiosimulator.pcm.dataprocessing.dataprocessing.characteristics.CharacteristicType;
-import org.palladiosimulator.pcm.dataprocessing.dataprocessing.characteristics.CharacteristicTypeContainer;
-import org.palladiosimulator.pcm.dataprocessing.dataprocessing.characteristics.Characterizable;
-import org.palladiosimulator.pcm.dataprocessing.dataprocessing.characteristics.RelatedCharacteristics;
 import org.palladiosimulator.pcm.dataprocessing.dataprocessing.processing.DataProcessingContainer;
-import org.palladiosimulator.pcm.dataprocessing.dynamicextension.context.Context;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.context.ContextCharacteristic;
-import org.palladiosimulator.pcm.dataprocessing.dynamicextension.context.ContextCharacteristicType;
 import org.palladiosimulator.pcm.repository.BasicComponent;
 import org.palladiosimulator.pcm.repository.OperationProvidedRole;
 import org.palladiosimulator.pcm.repository.OperationRequiredRole;
 import org.palladiosimulator.pcm.repository.OperationSignature;
-import org.palladiosimulator.pcm.repository.ProvidedRole;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.repository.RepositoryComponent;
 import org.palladiosimulator.pcm.seff.AbstractAction;
@@ -42,17 +33,19 @@ import org.palladiosimulator.pcm.usagemodel.ScenarioBehaviour;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 import org.palladiosimulator.pcm.usagemodel.UsageScenario;
 
-import util.MyLogger;
 import util.DataProcessingPrinter;
+import util.MyLogger;
 
 public class ContextHandler {
+    private final GenerationSettings settings;
     private final DataSpecificationAbstraction dataSpecAbs;
     private final UsageModel usageModel;
     private final Repository repo;
     private final System system;
 
-    public ContextHandler(final DataSpecification dataSpec, final UsageModel usageModel, final Repository repo,
-            final System system) {
+    public ContextHandler(final GenerationSettings settings, final DataSpecification dataSpec,
+            final UsageModel usageModel, final Repository repo, final System system) {
+        this.settings = settings;
         this.dataSpecAbs = new DataSpecificationAbstraction(dataSpec);
         this.usageModel = usageModel;
         this.repo = repo;
@@ -130,8 +123,6 @@ public class ContextHandler {
                     } else {
                         MyLogger.info("WRONG");
                     }
-                } else {
-                    MyLogger.error("TODO2!!!");
                 }
             }
         }
@@ -153,33 +144,36 @@ public class ContextHandler {
                 for (AbstractAction aa : rdSeff.getSteps_Behaviour()) {
                     if (aa instanceof InternalAction) {
                         applyContextsToInternalCall((InternalAction) aa, umcc);
-
                     } else if (aa instanceof ExternalCallAction) {
-                        ExternalCallAction eca = (ExternalCallAction) aa;
-                        MyLogger.info(eca.getEntityName());
-                        MyLogger.info(eca.getCalledService_ExternalService().getEntityName());
-                        OperationSignature op2 = eca.getCalledService_ExternalService();
-                        OperationRequiredRole orr = eca.getRole_ExternalService();
-                        MyLogger.info(orr.getEntityName());
-                        MyLogger.info(orr.getRequiredInterface__OperationRequiredRole().getEntityName());
+                        applyContextsToExternalCall((ExternalCallAction) aa, bcac, umcc);
+                    }
+                }
+            }
+        }
+    }
 
-                        for (Connector c : system.getConnectors__ComposedStructure()) {
-                            if (c instanceof AssemblyConnector) {
-                                MyLogger.info(c.getEntityName());
-                                AssemblyConnector ac = (AssemblyConnector) c;
-                                AssemblyContext acProvide = ac.getProvidingAssemblyContext_AssemblyConnector();
-                                AssemblyContext acRequire = ac.getRequiringAssemblyContext_AssemblyConnector();
-                                if (acRequire.equals(bcac)) {
-                                    OperationRequiredRole orr2 = ac.getRequiredRole_AssemblyConnector();
-                                    if (orr2.equals(orr)) {
-                                        RepositoryComponent rc = acProvide.getEncapsulatedComponent__AssemblyContext();
-                                        MyLogger.info(rc.getEntityName());
-                                        if (rc instanceof BasicComponent) {
-                                            applyContextsToBasicComponent(acProvide, (BasicComponent) rc, op2, umcc);
-                                        }
-                                    }
-                                }
-                            }
+    public void applyContextsToExternalCall(ExternalCallAction eca, AssemblyContext bcac,
+            CharacteristicContainer umcc) {
+        MyLogger.info(eca.getEntityName());
+        MyLogger.info(eca.getCalledService_ExternalService().getEntityName());
+        OperationSignature op2 = eca.getCalledService_ExternalService();
+        OperationRequiredRole orr = eca.getRole_ExternalService();
+        MyLogger.info(orr.getEntityName());
+        MyLogger.info(orr.getRequiredInterface__OperationRequiredRole().getEntityName());
+
+        for (Connector c : system.getConnectors__ComposedStructure()) {
+            if (c instanceof AssemblyConnector) {
+                MyLogger.info(c.getEntityName());
+                AssemblyConnector ac = (AssemblyConnector) c;
+                AssemblyContext acProvide = ac.getProvidingAssemblyContext_AssemblyConnector();
+                AssemblyContext acRequire = ac.getRequiringAssemblyContext_AssemblyConnector();
+                if (acRequire.equals(bcac)) {
+                    OperationRequiredRole orr2 = ac.getRequiredRole_AssemblyConnector();
+                    if (orr2.equals(orr)) {
+                        RepositoryComponent rc = acProvide.getEncapsulatedComponent__AssemblyContext();
+                        MyLogger.info(rc.getEntityName());
+                        if (rc instanceof BasicComponent) {
+                            applyContextsToBasicComponent(acProvide, (BasicComponent) rc, op2, umcc);
                         }
                     }
                 }
@@ -221,12 +215,25 @@ public class ContextHandler {
 
         // Iterate all context, apply each to dpc
         for (ContextCharacteristic c : dataSpecAbs.getContextCharacteristic(cc)) {
+            boolean contextApplied = false;
             for (ContextCharacteristic c2 : dataSpecAbs.getContextCharacteristic(cc2)) {
-                // TODO add filter for "correct" contexttype?
-                c2.getContext().addAll(c.getContext());
-                MyLogger.info2("Apply:" + cc.getEntityName() + " to " + cc2.getEntityName());
-                MyLogger.info2("Contexts applied:" + c.getContext().toString());
-                MyLogger.info2("Contexts after:" + c2.getContext().toString());
+
+                if (c.getCharacteristicType() == c2.getCharacteristicType()) {
+                    MyLogger.info2("MATCH");
+                    MyLogger.info2("Apply:" + cc.getEntityName() + " to " + cc2.getEntityName());
+                    dataSpecAbs.applyContext(c2, c);
+                    contextApplied = true;
+                }
+            }
+
+            // Context wasn't applied because no matching contexttype found -> create context type
+            if (!contextApplied) {
+                if (settings.isCreateContextCharacteristic()) {
+                    MyLogger.info("CREATE NEW CONTEXTCONTAINER");
+                    MyLogger.info("Before:" + cc2.getOwnedCharacteristics().size());
+                    dataSpecAbs.createContextCharacteristic(cc2, c);
+                    MyLogger.info("After:" + cc2.getOwnedCharacteristics().size());
+                }
             }
         }
         new DataProcessingPrinter(dataSpecAbs.getDataSpec()).printDataProcessing();

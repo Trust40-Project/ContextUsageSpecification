@@ -62,21 +62,21 @@ public class ModelHandler {
     }
 
     public UsageModel loadUsageModel() {
-        resourceData = loadResource(this.resourceSet, model.getUsageModelPath());
+        Resource resourceData = loadResource(this.resourceSet, model.getUsageModelPath());
 
         // TODO Throw exception if > 1 or cast fails
         return (UsageModel) resourceData.getContents().get(0);
     }
 
     public Repository loadRepositoryModel() {
-        resourceData = loadResource(this.resourceSet, model.getRepositoryModelPath());
+        Resource resourceData = loadResource(this.resourceSet, model.getRepositoryModelPath());
 
         // TODO Throw exception if > 1 or cast fails
         return (Repository) resourceData.getContents().get(0);
     }
 
     public System loadAssemblyModel() {
-        resourceData = loadResource(this.resourceSet, model.getAssemblyPath());
+        Resource resourceData = loadResource(this.resourceSet, model.getAssemblyPath());
 
         // TODO Throw exception if > 1 or cast fails
         return (System) resourceData.getContents().get(0);

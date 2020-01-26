@@ -8,6 +8,7 @@ import org.palladiosimulator.pcm.system.System;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
 import generation.ContextHandler;
+import generation.GenerationSettings;
 
 public class MainHandler {
     // TODO needed?
@@ -16,13 +17,15 @@ public class MainHandler {
     public void execute(String dataPath) {
         Objects.requireNonNull(dataPath);
 
+        GenerationSettings settings = new GenerationSettings(true);
+
         ModelHandler modelloader = new ModelHandler(dataPath);
         DataSpecification dataSpec = modelloader.loadDataSpecification();
         UsageModel usageModel = modelloader.loadUsageModel();
         Repository repo = modelloader.loadRepositoryModel();
         System system = modelloader.loadAssemblyModel();
 
-        final ContextHandler ch = new ContextHandler(dataSpec, usageModel, repo, system);
+        final ContextHandler ch = new ContextHandler(settings, dataSpec, usageModel, repo, system);
         ch.execute();
 
         modelloader.saveDataSpecification();
