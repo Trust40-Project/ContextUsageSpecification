@@ -19,8 +19,8 @@ import setting.GenerationSettings;
 import util.MyLogger;
 import util.Util;
 
-public class usecase2 {
-    // usecase2 applies context of systemcall to method
+public class usecase6c {
+    // usecase1 applies context of systemcall to method
     // TODO restructure
 
     @Test
@@ -28,10 +28,10 @@ public class usecase2 {
         final String currentPath = Util.getCurrentDir();
         MyLogger.info(currentPath);
 
-        String dataPath = currentPath + "\\..\\" + "usecase2";
+        String dataPath = currentPath + "\\..\\" + "usecase6";
         MyLogger.info(dataPath);
 
-        GenerationSettings settings = new GenerationSettings(false, ContextMaster.Characterizable);
+        GenerationSettings settings = new GenerationSettings(false, ContextMaster.Combined);
 
         ModelHandler modelloader = new ModelHandler(dataPath);
         DataSpecification dataSpec = modelloader.loadDataSpecification();

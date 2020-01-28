@@ -13,8 +13,9 @@ import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
 import generation.ContextHandler;
 import generation.DataSpecificationAbstraction;
-import generation.GenerationSettings;
 import mainhandler.ModelHandler;
+import setting.ContextMaster;
+import setting.GenerationSettings;
 import util.MyLogger;
 import util.Util;
 
@@ -30,7 +31,7 @@ public class usecase1 {
         String dataPath = currentPath + "\\..\\" + "usecase1";
         MyLogger.info(dataPath);
 
-        GenerationSettings settings = new GenerationSettings(false);
+        GenerationSettings settings = new GenerationSettings(false, ContextMaster.Characterizable);
 
         ModelHandler modelloader = new ModelHandler(dataPath);
         DataSpecification dataSpec = modelloader.loadDataSpecification();

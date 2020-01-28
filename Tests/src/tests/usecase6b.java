@@ -13,12 +13,13 @@ import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
 import generation.ContextHandler;
 import generation.DataSpecificationAbstraction;
-import generation.GenerationSettings;
 import mainhandler.ModelHandler;
+import setting.ContextMaster;
+import setting.GenerationSettings;
 import util.MyLogger;
 import util.Util;
 
-public class usecase6 {
+public class usecase6b {
     // usecase1 applies context of systemcall to method
     // TODO restructure
 
@@ -27,10 +28,10 @@ public class usecase6 {
         final String currentPath = Util.getCurrentDir();
         MyLogger.info(currentPath);
 
-        String dataPath = currentPath;// + "\\..\\" + "usecase1";
+        String dataPath = currentPath + "\\..\\" + "usecase6";
         MyLogger.info(dataPath);
 
-        GenerationSettings settings = new GenerationSettings(true);
+        GenerationSettings settings = new GenerationSettings(false, ContextMaster.DataProcessing);
 
         ModelHandler modelloader = new ModelHandler(dataPath);
         DataSpecification dataSpec = modelloader.loadDataSpecification();
@@ -43,25 +44,25 @@ public class usecase6 {
 
         CharacteristicContainer sys = dataSpecAbs.getCharacteristicContainerByName("SystemCall1");
         CharacteristicContainer method = dataSpecAbs.getCharacteristicContainerByName("method1");
+        CharacteristicContainer method2 = dataSpecAbs.getCharacteristicContainerByName("method2");
         assertNotNull(sys);
         assertNotNull(method);
+        assertNotNull(method2);
 
-        Context c_sys = dataSpecAbs.getContextByName(sys, "high");
-        Context c_method = dataSpecAbs.getContextByName(method, "aname");
-        Context c_method2 = dataSpecAbs.getContextByName(method, "high");
+        Context c_sys = dataSpecAbs.getContextByName(sys, "PUBLIC");
+        Context c_method = dataSpecAbs.getContextByName(method, "PUBLIC");
+        Context c_method2 = dataSpecAbs.getContextByName(method2, "PUBLIC");
         assertNotNull(c_sys);
-        assertNotNull(c_method);
+        assertNull(c_method);
         assertNull(c_method2);
 
         ch.execute();
 
-        c_sys = dataSpecAbs.getContextByName(sys, "high");
-        c_method = dataSpecAbs.getContextByName(method, "aname");
-        c_method2 = dataSpecAbs.getContextByName(method, "high");
+        c_sys = dataSpecAbs.getContextByName(sys, "PUBLIC");
+        c_method = dataSpecAbs.getContextByName(method, "PUBLIC");
+        c_method2 = dataSpecAbs.getContextByName(method2, "PUBLIC");
         assertNotNull(c_sys);
         assertNotNull(c_method);
-        assertNotNull(c_method2);
-
+        assertNull(c_method2);
     }
-
 }

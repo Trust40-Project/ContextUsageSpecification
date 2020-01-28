@@ -32,6 +32,7 @@ import org.palladiosimulator.pcm.usagemodel.ScenarioBehaviour;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 import org.palladiosimulator.pcm.usagemodel.UsageScenario;
 
+import setting.GenerationSettings;
 import util.DataProcessingPrinter;
 import util.MyLogger;
 

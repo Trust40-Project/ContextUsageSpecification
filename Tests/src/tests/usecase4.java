@@ -13,8 +13,9 @@ import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
 import generation.ContextHandler;
 import generation.DataSpecificationAbstraction;
-import generation.GenerationSettings;
 import mainhandler.ModelHandler;
+import setting.ContextMaster;
+import setting.GenerationSettings;
 import util.MyLogger;
 import util.Util;
 
@@ -31,7 +32,7 @@ public class usecase4 {
         MyLogger.info(dataPath);
 
         // TODO :Usecase for false
-        GenerationSettings settings = new GenerationSettings(true);
+        GenerationSettings settings = new GenerationSettings(true, ContextMaster.Characterizable);
 
         ModelHandler modelloader = new ModelHandler(dataPath);
         DataSpecification dataSpec = modelloader.loadDataSpecification();

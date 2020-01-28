@@ -8,7 +8,8 @@ import org.palladiosimulator.pcm.system.System;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
 import generation.ContextHandler;
-import generation.GenerationSettings;
+import setting.ContextMaster;
+import setting.GenerationSettings;
 
 public class MainHandler {
     // TODO needed?
@@ -17,7 +18,7 @@ public class MainHandler {
     public void execute(String dataPath) {
         Objects.requireNonNull(dataPath);
 
-        GenerationSettings settings = new GenerationSettings(true);
+        GenerationSettings settings = new GenerationSettings(true, ContextMaster.Characterizable);
 
         ModelHandler modelloader = new ModelHandler(dataPath);
         DataSpecification dataSpec = modelloader.loadDataSpecification();
