@@ -18,7 +18,7 @@ import mainhandler.ModelHandler;
 import util.MyLogger;
 import util.Util;
 
-public class usecase1 {
+public class usecase4 {
     // usecase1 applies context of systemcall to method
     // TODO restructure
 
@@ -27,10 +27,11 @@ public class usecase1 {
         final String currentPath = Util.getCurrentDir();
         MyLogger.info(currentPath);
 
-        String dataPath = currentPath + "\\..\\" + "usecase1";
+        String dataPath = currentPath + "\\..\\" + "usecase4";
         MyLogger.info(dataPath);
 
-        GenerationSettings settings = new GenerationSettings(false);
+        // TODO :Usecase for false
+        GenerationSettings settings = new GenerationSettings(true);
 
         ModelHandler modelloader = new ModelHandler(dataPath);
         DataSpecification dataSpec = modelloader.loadDataSpecification();

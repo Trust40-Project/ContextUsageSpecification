@@ -9,7 +9,6 @@ import org.modelversioning.emfprofile.Stereotype;
 import org.palladiosimulator.mdsdprofiles.api.StereotypeAPI;
 import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
-import org.palladiosimulator.pcm.core.composition.Connector;
 import org.palladiosimulator.pcm.core.composition.ProvidedDelegationConnector;
 import org.palladiosimulator.pcm.dataprocessing.dataprocessing.DataSpecification;
 import org.palladiosimulator.pcm.dataprocessing.dataprocessing.characteristics.CharacteristicContainer;
@@ -41,7 +40,7 @@ public class ContextHandler {
     private final DataSpecificationAbstraction dataSpecAbs;
     private final UsageModel usageModel;
     private final Repository repo;
-    private final System system;
+    private final AssemblyAbstraction assemblyAbs;
 
     public ContextHandler(final GenerationSettings settings, final DataSpecification dataSpec,
             final UsageModel usageModel, final Repository repo, final System system) {
@@ -49,7 +48,7 @@ public class ContextHandler {
         this.dataSpecAbs = new DataSpecificationAbstraction(dataSpec);
         this.usageModel = usageModel;
         this.repo = repo;
-        this.system = system;
+        this.assemblyAbs = new AssemblyAbstraction(system);
     }
 
     public void execute() {
@@ -105,23 +104,19 @@ public class ContextHandler {
 
             // Find Component by iterating connectors, check outer role with system call
             // Still pass operation signature to know which function is called
-            for (Connector c : system.getConnectors__ComposedStructure()) {
-                MyLogger.info(c.getEntityName());
-                if (c instanceof ProvidedDelegationConnector) {
-                    ProvidedDelegationConnector pdc = (ProvidedDelegationConnector) c;
-                    if (pdc.getOuterProvidedRole_ProvidedDelegationConnector() == opr) {
-                        MyLogger.info(pdc.getAssemblyContext_ProvidedDelegationConnector().getEntityName());
-                        AssemblyContext ac = pdc.getAssemblyContext_ProvidedDelegationConnector();
-                        RepositoryComponent rc = ac.getEncapsulatedComponent__AssemblyContext();
-                        MyLogger.info(rc.getEntityName());
-                        if (rc instanceof BasicComponent) {
-                            applyContextsToBasicComponent(ac, (BasicComponent) rc, op, cc);
-                        } else {
-                            // TODO other cases
-                            MyLogger.error("TODO!!!");
-                        }
+            for (ProvidedDelegationConnector connector : assemblyAbs.getListOfProvidedDelegationConnector()) {
+                OperationProvidedRole opr2 = connector.getOuterProvidedRole_ProvidedDelegationConnector();
+
+                if (assemblyAbs.isOperationProvidedRoleMatch(opr, opr2)) {
+                    MyLogger.info(connector.getAssemblyContext_ProvidedDelegationConnector().getEntityName());
+                    AssemblyContext ac = connector.getAssemblyContext_ProvidedDelegationConnector();
+                    RepositoryComponent rc = ac.getEncapsulatedComponent__AssemblyContext();
+                    MyLogger.info(rc.getEntityName());
+                    if (rc instanceof BasicComponent) {
+                        applyContextsToBasicComponent(ac, (BasicComponent) rc, op, cc);
                     } else {
-                        MyLogger.info("WRONG");
+                        // TODO other cases
+                        MyLogger.error("TODO!!!");
                     }
                 }
             }
@@ -161,20 +156,18 @@ public class ContextHandler {
         MyLogger.info(orr.getEntityName());
         MyLogger.info(orr.getRequiredInterface__OperationRequiredRole().getEntityName());
 
-        for (Connector c : system.getConnectors__ComposedStructure()) {
-            if (c instanceof AssemblyConnector) {
-                MyLogger.info(c.getEntityName());
-                AssemblyConnector ac = (AssemblyConnector) c;
-                AssemblyContext acProvide = ac.getProvidingAssemblyContext_AssemblyConnector();
-                AssemblyContext acRequire = ac.getRequiringAssemblyContext_AssemblyConnector();
-                if (acRequire.equals(bcac)) {
-                    OperationRequiredRole orr2 = ac.getRequiredRole_AssemblyConnector();
-                    if (orr2.equals(orr)) {
-                        RepositoryComponent rc = acProvide.getEncapsulatedComponent__AssemblyContext();
-                        MyLogger.info(rc.getEntityName());
-                        if (rc instanceof BasicComponent) {
-                            applyContextsToBasicComponent(acProvide, (BasicComponent) rc, op2, umcc);
-                        }
+        for (AssemblyConnector connector : assemblyAbs.getListOfAssemblyConnectors()) {
+            MyLogger.info(connector.getEntityName());
+            AssemblyConnector ac = (AssemblyConnector) connector;
+            AssemblyContext acProvide = ac.getProvidingAssemblyContext_AssemblyConnector();
+            AssemblyContext acRequire = ac.getRequiringAssemblyContext_AssemblyConnector();
+            if (acRequire.equals(bcac)) {
+                OperationRequiredRole orr2 = ac.getRequiredRole_AssemblyConnector();
+                if (orr2.equals(orr)) {
+                    RepositoryComponent rc = acProvide.getEncapsulatedComponent__AssemblyContext();
+                    MyLogger.info(rc.getEntityName());
+                    if (rc instanceof BasicComponent) {
+                        applyContextsToBasicComponent(acProvide, (BasicComponent) rc, op2, umcc);
                     }
                 }
             }
@@ -213,13 +206,18 @@ public class ContextHandler {
         // Get cc from dpc
         CharacteristicContainer cc2 = dataSpecAbs.getCharacteristicContainerForDataProcessingContainer(dpc);
 
+        if (cc2 == null) {
+            MyLogger.error("DataProcessingContainer(" + dpc.getEntityName()
+                    + ") couldn't be matched to CharacteristicContainer");
+        }
+
         // Iterate all context, apply each to dpc
         for (ContextCharacteristic c : dataSpecAbs.getContextCharacteristic(cc)) {
             boolean contextApplied = false;
             for (ContextCharacteristic c2 : dataSpecAbs.getContextCharacteristic(cc2)) {
-
-                if (c.getCharacteristicType() == c2.getCharacteristicType()) {
-                    MyLogger.info2("MATCH");
+                // TODO anoter compare issue
+                // if (c.getCharacteristicType() == c2.getCharacteristicType()) {
+                if (c.getCharacteristicType().getId().equalsIgnoreCase(c2.getCharacteristicType().getId())) {
                     MyLogger.info2("Apply:" + cc.getEntityName() + " to " + cc2.getEntityName());
                     dataSpecAbs.applyContext(c2, c);
                     contextApplied = true;
@@ -229,7 +227,7 @@ public class ContextHandler {
             // Context wasn't applied because no matching contexttype found -> create context type
             if (!contextApplied) {
                 if (settings.isCreateContextCharacteristic()) {
-                    MyLogger.info("CREATE NEW CONTEXTCONTAINER");
+                    MyLogger.info2("CREATE NEW CONTEXTCONTAINER");
                     MyLogger.info("Before:" + cc2.getOwnedCharacteristics().size());
                     dataSpecAbs.createContextCharacteristic(cc2, c);
                     MyLogger.info("After:" + cc2.getOwnedCharacteristics().size());

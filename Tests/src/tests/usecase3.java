@@ -18,7 +18,7 @@ import mainhandler.ModelHandler;
 import util.MyLogger;
 import util.Util;
 
-public class usecase1 {
+public class usecase3 {
     // usecase1 applies context of systemcall to method
     // TODO restructure
 
@@ -27,7 +27,7 @@ public class usecase1 {
         final String currentPath = Util.getCurrentDir();
         MyLogger.info(currentPath);
 
-        String dataPath = currentPath + "\\..\\" + "usecase1";
+        String dataPath = currentPath + "\\..\\" + "usecase3";
         MyLogger.info(dataPath);
 
         GenerationSettings settings = new GenerationSettings(false);
@@ -43,19 +43,25 @@ public class usecase1 {
 
         CharacteristicContainer sys = dataSpecAbs.getCharacteristicContainerByName("SystemCall1");
         CharacteristicContainer method = dataSpecAbs.getCharacteristicContainerByName("method1");
+        CharacteristicContainer method2 = dataSpecAbs.getCharacteristicContainerByName("method2");
         assertNotNull(sys);
         assertNotNull(method);
+        assertNotNull(method2);
 
         Context c_sys = dataSpecAbs.getContextByName(sys, "PUBLIC");
         Context c_method = dataSpecAbs.getContextByName(method, "PUBLIC");
+        Context c_method2 = dataSpecAbs.getContextByName(method2, "PUBLIC");
         assertNotNull(c_sys);
         assertNull(c_method);
+        assertNull(c_method2);
 
         ch.execute();
 
         c_sys = dataSpecAbs.getContextByName(sys, "PUBLIC");
         c_method = dataSpecAbs.getContextByName(method, "PUBLIC");
+        c_method2 = dataSpecAbs.getContextByName(method2, "PUBLIC");
         assertNotNull(c_sys);
         assertNotNull(c_method);
+        assertNotNull(c_method2);
     }
 }

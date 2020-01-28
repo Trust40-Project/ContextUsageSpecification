@@ -18,7 +18,7 @@ import mainhandler.ModelHandler;
 import util.MyLogger;
 import util.Util;
 
-public class usecase1 {
+public class usecase6 {
     // usecase1 applies context of systemcall to method
     // TODO restructure
 
@@ -27,10 +27,10 @@ public class usecase1 {
         final String currentPath = Util.getCurrentDir();
         MyLogger.info(currentPath);
 
-        String dataPath = currentPath + "\\..\\" + "usecase1";
+        String dataPath = currentPath;// + "\\..\\" + "usecase1";
         MyLogger.info(dataPath);
 
-        GenerationSettings settings = new GenerationSettings(false);
+        GenerationSettings settings = new GenerationSettings(true);
 
         ModelHandler modelloader = new ModelHandler(dataPath);
         DataSpecification dataSpec = modelloader.loadDataSpecification();
@@ -46,16 +46,22 @@ public class usecase1 {
         assertNotNull(sys);
         assertNotNull(method);
 
-        Context c_sys = dataSpecAbs.getContextByName(sys, "PUBLIC");
-        Context c_method = dataSpecAbs.getContextByName(method, "PUBLIC");
+        Context c_sys = dataSpecAbs.getContextByName(sys, "high");
+        Context c_method = dataSpecAbs.getContextByName(method, "aname");
+        Context c_method2 = dataSpecAbs.getContextByName(method, "high");
         assertNotNull(c_sys);
-        assertNull(c_method);
+        assertNotNull(c_method);
+        assertNull(c_method2);
 
         ch.execute();
 
-        c_sys = dataSpecAbs.getContextByName(sys, "PUBLIC");
-        c_method = dataSpecAbs.getContextByName(method, "PUBLIC");
+        c_sys = dataSpecAbs.getContextByName(sys, "high");
+        c_method = dataSpecAbs.getContextByName(method, "aname");
+        c_method2 = dataSpecAbs.getContextByName(method, "high");
         assertNotNull(c_sys);
         assertNotNull(c_method);
+        assertNotNull(c_method2);
+
     }
+
 }

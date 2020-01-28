@@ -31,8 +31,14 @@ public class DataSpecificationAbstraction {
                 // TODO more than 1 possible? for each match
                 break;
             }
+
+            // TODO again problem with compare
+            if (rc.getRelatedEntity().getId().equalsIgnoreCase(dpc.getId())) {
+                cc = rc.getCharacteristics();
+                // TODO more than 1 possible? for each match
+                break;
+            }
         }
-        // TODO catch null
         return cc;
     }
 
@@ -55,7 +61,6 @@ public class DataSpecificationAbstraction {
         return list;
     }
 
-    // TODO check contexttype first
     public Context getContextByName(CharacteristicContainer cc, String name) {
         for (ContextCharacteristic c : getContextCharacteristic(cc)) {
             for (Context context : c.getContext()) {

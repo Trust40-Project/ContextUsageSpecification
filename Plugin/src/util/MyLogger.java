@@ -15,7 +15,7 @@ public class MyLogger {
     }
 
     public static void error(String string) {
-        getInstance().println(string);
+        getInstance().println2(string);
     }
 
     public static void info(String string) {
