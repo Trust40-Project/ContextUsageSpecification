@@ -1,0 +1,71 @@
+package generation;
+
+import org.eclipse.emf.common.util.BasicEList;
+import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.ecore.EStructuralFeature;
+import org.modelversioning.emfprofile.Stereotype;
+import org.palladiosimulator.mdsdprofiles.api.StereotypeAPI;
+import org.palladiosimulator.pcm.dataprocessing.dataprocessing.characteristics.CharacteristicContainer;
+import org.palladiosimulator.pcm.usagemodel.AbstractUserAction;
+import org.palladiosimulator.pcm.usagemodel.EntryLevelSystemCall;
+import org.palladiosimulator.pcm.usagemodel.ScenarioBehaviour;
+import org.palladiosimulator.pcm.usagemodel.UsageModel;
+import org.palladiosimulator.pcm.usagemodel.UsageScenario;
+
+import util.MyLogger;
+
+public class UsageModelAbstraction {
+    private final UsageModel usageModel;
+
+    public UsageModelAbstraction(final UsageModel usageModel) {
+        this.usageModel = usageModel;
+    }
+
+    private ScenarioBehaviour getScenarioBehaviour() {
+        // TODO select correct model, or make loop
+        UsageScenario us = usageModel.getUsageScenario_UsageModel().get(0);
+        ScenarioBehaviour sb = us.getScenarioBehaviour_UsageScenario();
+        return sb;
+    }
+
+    public CharacteristicContainer getAppliedCharacterizableContainer() {
+        CharacteristicContainer containerCharacterizable = null;
+
+        ScenarioBehaviour scenarioBehaviour = getScenarioBehaviour();
+        MyLogger.info(scenarioBehaviour.getEntityName());
+
+        // Iterate applied stereotypes, look for Characterizable
+        for (Stereotype stereotype : StereotypeAPI.getAppliedStereotypes(scenarioBehaviour)) {
+            MyLogger.info(stereotype.getName());
+
+            // TODO proper cast or check to Characterizable
+            if ((stereotype.getName().equals("Characterizable"))) {
+                for (EStructuralFeature structuralFeature : StereotypeAPI.getParameters(stereotype)) {
+                    String name = structuralFeature.getName();
+                    Object obj = StereotypeAPI.getTaggedValue(scenarioBehaviour, name, stereotype.getName());
+                    if (obj instanceof CharacteristicContainer) {
+                        containerCharacterizable = (CharacteristicContainer) obj;
+                    } else {
+                        MyLogger.error("CharacteristicContainer not selected");
+                    }
+                }
+            }
+        }
+        return containerCharacterizable;
+    }
+
+    public EList<EntryLevelSystemCall> getListOfEntryLevelSystemCalls() {
+        EList<EntryLevelSystemCall> list = new BasicEList<>();
+        for (AbstractUserAction abstractUserAction : getScenarioBehaviour().getActions_ScenarioBehaviour()) {
+            if (abstractUserAction instanceof EntryLevelSystemCall) {
+                list.add((EntryLevelSystemCall) abstractUserAction);
+            }
+        }
+        return list;
+    }
+
+    public CharacteristicContainer getAppliedContainer(EntryLevelSystemCall systemCall) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+}
