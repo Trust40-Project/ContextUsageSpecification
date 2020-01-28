@@ -18,7 +18,7 @@ public class MainHandler {
     public void execute(String dataPath) {
         Objects.requireNonNull(dataPath);
 
-        GenerationSettings settings = new GenerationSettings(true, ContextMaster.DataProcessing);
+        GenerationSettings settings = new GenerationSettings(true, ContextMaster.Combined);
 
         ModelHandler modelloader = new ModelHandler(dataPath);
         DataSpecification dataSpec = modelloader.loadDataSpecification();
