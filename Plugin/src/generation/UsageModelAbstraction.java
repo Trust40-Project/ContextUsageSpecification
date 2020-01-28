@@ -6,6 +6,7 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 import org.modelversioning.emfprofile.Stereotype;
 import org.palladiosimulator.mdsdprofiles.api.StereotypeAPI;
 import org.palladiosimulator.pcm.dataprocessing.dataprocessing.characteristics.CharacteristicContainer;
+import org.palladiosimulator.pcm.dataprocessing.dataprocessing.processing.DataProcessingContainer;
 import org.palladiosimulator.pcm.usagemodel.AbstractUserAction;
 import org.palladiosimulator.pcm.usagemodel.EntryLevelSystemCall;
 import org.palladiosimulator.pcm.usagemodel.ScenarioBehaviour;
@@ -16,9 +17,11 @@ import util.MyLogger;
 
 public class UsageModelAbstraction {
     private final UsageModel usageModel;
+    private final DataSpecificationAbstraction dataSpecAbs;
 
-    public UsageModelAbstraction(final UsageModel usageModel) {
+    public UsageModelAbstraction(final UsageModel usageModel, DataSpecificationAbstraction dataSpecAbs) {
         this.usageModel = usageModel;
+        this.dataSpecAbs = dataSpecAbs;
     }
 
     private ScenarioBehaviour getScenarioBehaviour() {
@@ -65,7 +68,31 @@ public class UsageModelAbstraction {
     }
 
     public CharacteristicContainer getAppliedContainer(EntryLevelSystemCall systemCall) {
-        // TODO Auto-generated method stub
-        return null;
+        CharacteristicContainer chracteristicContainer = null;
+
+        // Iterate applied stereotypes, look for
+        for (Stereotype stereotype : StereotypeAPI.getAppliedStereotypes(systemCall)) {
+
+            // TODO proper cast or check to dataprocessing
+            if ((stereotype.getName().equals("DataProcessingSpecification"))) {
+
+                for (EStructuralFeature structuralFeature : StereotypeAPI.getParameters(stereotype)) {
+                    String name = structuralFeature.getName();
+                    Object obj = StereotypeAPI.getTaggedValue(systemCall, name, stereotype.getName());
+                    if (obj instanceof DataProcessingContainer) {
+                        DataProcessingContainer dpc = (DataProcessingContainer) obj;
+                        chracteristicContainer = dataSpecAbs.getCharacteristicContainerForDataProcessingContainer(dpc);
+                        if (chracteristicContainer == null) {
+                            MyLogger.error("DataProcessingContainer(" + dpc.getEntityName()
+                                    + ") couldn't be matched to CharacteristicContainer");
+                        }
+                    } else {
+                        MyLogger.error("CharacteristicContainer not selected");
+                    }
+                }
+            }
+        }
+
+        return chracteristicContainer;
     }
 }

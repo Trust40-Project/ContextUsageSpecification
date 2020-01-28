@@ -42,7 +42,7 @@ public class ContextHandler {
             final UsageModel usageModel, final Repository repo, final System system) {
         this.settings = settings;
         this.dataSpecAbs = new DataSpecificationAbstraction(dataSpec);
-        this.usageModelAbs = new UsageModelAbstraction(usageModel);
+        this.usageModelAbs = new UsageModelAbstraction(usageModel, dataSpecAbs);
         this.repo = repo;
         this.assemblyAbs = new AssemblyAbstraction(system);
     }
