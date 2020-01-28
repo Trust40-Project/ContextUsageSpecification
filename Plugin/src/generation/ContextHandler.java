@@ -10,7 +10,10 @@ import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.ProvidedDelegationConnector;
 import org.palladiosimulator.pcm.dataprocessing.dataprocessing.DataSpecification;
 import org.palladiosimulator.pcm.dataprocessing.dataprocessing.characteristics.CharacteristicContainer;
+import org.palladiosimulator.pcm.dataprocessing.dataprocessing.characteristics.CharacteristicsFactory;
+import org.palladiosimulator.pcm.dataprocessing.dataprocessing.characteristics.RelatedCharacteristics;
 import org.palladiosimulator.pcm.dataprocessing.dataprocessing.processing.DataProcessingContainer;
+import org.palladiosimulator.pcm.dataprocessing.dataprocessing.processing.ProcessingFactory;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.context.ContextCharacteristic;
 import org.palladiosimulator.pcm.repository.BasicComponent;
 import org.palladiosimulator.pcm.repository.OperationProvidedRole;
@@ -165,50 +168,74 @@ public class ContextHandler {
     }
 
     public void applyContextsToInternalCall(InternalAction ia, CharacteristicContainer umcc) {
+        boolean isStereoTypeApplied = false;
         for (Stereotype stereotype : StereotypeAPI.getAppliedStereotypes(ia)) {
             MyLogger.info(stereotype.getName());
             // TODO proper cast or check to DataProcessingSpecification
             if ((stereotype.getName().equals("DataProcessingSpecification"))) {
+                isStereoTypeApplied = true;
+
                 Collection<EStructuralFeature> list = StereotypeAPI.getParameters(stereotype);
                 for (EStructuralFeature esf : list) {
-
                     String name = esf.getName();
                     MyLogger.info(name);
                     Object obj = StereotypeAPI.getTaggedValue(ia, name, stereotype.getName());
                     if (obj != null) {
                         MyLogger.info(obj.getClass().getSimpleName());
                         DataProcessingContainer dpc = (DataProcessingContainer) obj;
-                        applyContexts(dpc, umcc);
+
+                        CharacteristicContainer cc2 = dataSpecAbs
+                                .getCharacteristicContainerForDataProcessingContainer(dpc);
+
+                        if (cc2 == null) {
+                            MyLogger.error("DataProcessingContainer(" + dpc.getEntityName()
+                                    + ") couldn't be matched to CharacteristicContainer");
+                        } else {
+                            applyContexts(cc2, umcc);
+                        }
                     } else {
                         MyLogger.error("Stereotype applied put no dataprocessing container selected!");
                     }
                 }
             }
         }
+
+        if (!isStereoTypeApplied) {
+            if (settings.isApplyStereotype()) {
+                // TODO names
+                CharacteristicContainer newCC = CharacteristicsFactory.eINSTANCE.createCharacteristicContainer();
+                dataSpecAbs.getDataSpec().getCharacteristicContainer().add(newCC);
+
+                DataProcessingContainer newDPC = ProcessingFactory.eINSTANCE.createDataProcessingContainer();
+                dataSpecAbs.getDataSpec().getDataProcessingContainers().add(newDPC);
+
+                RelatedCharacteristics newRC = CharacteristicsFactory.eINSTANCE.createRelatedCharacteristics();
+                newRC.setCharacteristics(newCC);
+                newRC.setRelatedEntity(newDPC);
+                dataSpecAbs.getDataSpec().getRelatedCharacteristics().add(newRC);
+
+                StereotypeAPI.applyStereotype(ia, "DataProcessingSpecification");
+                StereotypeAPI.setTaggedValue(ia, newDPC, "DataProcessingSpecification", "dataProcessingContainer");
+
+                applyContextsToInternalCall(ia, umcc);
+            }
+        }
     }
 
     // Apply Contexts to CharacteristicContainer related to dpc, from reference
     // CharacteristicContainer cc
-    public void applyContexts(DataProcessingContainer dpc, CharacteristicContainer cc) {
+    public void applyContexts(CharacteristicContainer applyTo, CharacteristicContainer applyFrom) {
         MyLogger.info("\nApply Context");
         new DataProcessingPrinter(dataSpecAbs.getDataSpec()).printDataProcessing();
 
-        // Get cc from dpc
-        CharacteristicContainer cc2 = dataSpecAbs.getCharacteristicContainerForDataProcessingContainer(dpc);
-
-        if (cc2 == null) {
-            MyLogger.error("DataProcessingContainer(" + dpc.getEntityName()
-                    + ") couldn't be matched to CharacteristicContainer");
-        }
-
         // Iterate all context, apply each to dpc
-        for (ContextCharacteristic c : dataSpecAbs.getContextCharacteristic(cc)) {
+        for (ContextCharacteristic c : dataSpecAbs.getContextCharacteristic(applyFrom)) {
             boolean contextApplied = false;
-            for (ContextCharacteristic c2 : dataSpecAbs.getContextCharacteristic(cc2)) {
+            for (ContextCharacteristic c2 : dataSpecAbs.getContextCharacteristic(applyTo)) {
                 // TODO anoter compare issue
                 // if (c.getCharacteristicType() == c2.getCharacteristicType()) {
                 if (c.getCharacteristicType().getId().equalsIgnoreCase(c2.getCharacteristicType().getId())) {
-                    MyLogger.info2("Apply:" + cc.getEntityName() + " to " + cc2.getEntityName());
+                    MyLogger.info2("Apply:" + applyFrom.getEntityName() + " to " + applyTo.getEntityName());
                     dataSpecAbs.applyContext(c2, c);
                     contextApplied = true;
                 }
@@ -218,9 +245,9 @@ public class ContextHandler {
             if (!contextApplied) {
                 if (settings.isCreateContextCharacteristic()) {
                     MyLogger.info2("CREATE NEW CONTEXTCONTAINER");
-                    MyLogger.info("Before:" + cc2.getOwnedCharacteristics().size());
-                    dataSpecAbs.createContextCharacteristic(cc2, c);
-                    MyLogger.info("After:" + cc2.getOwnedCharacteristics().size());
+                    MyLogger.info("Before:" + applyTo.getOwnedCharacteristics().size());
+                    dataSpecAbs.createContextCharacteristic(applyTo, c);
+                    MyLogger.info("After:" + applyTo.getOwnedCharacteristics().size());
                 }
             }
         }

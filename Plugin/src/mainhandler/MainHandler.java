@@ -18,7 +18,7 @@ public class MainHandler {
     public void execute(String dataPath) {
         Objects.requireNonNull(dataPath);
 
-        GenerationSettings settings = new GenerationSettings(true, ContextMaster.Combined);
+        GenerationSettings settings = new GenerationSettings(true, ContextMaster.Combined, true);
 
         ModelHandler modelloader = new ModelHandler(dataPath);
         DataSpecification dataSpec = modelloader.loadDataSpecification();
@@ -26,9 +26,13 @@ public class MainHandler {
         Repository repo = modelloader.loadRepositoryModel();
         System system = modelloader.loadAssemblyModel();
 
+        // TODO add setting
+        // modelloader.trackModifications();
+
         final ContextHandler ch = new ContextHandler(settings, dataSpec, usageModel, repo, system);
         ch.execute();
 
         modelloader.saveDataSpecification();
+        modelloader.saveRepositoryModel();
     }
 }

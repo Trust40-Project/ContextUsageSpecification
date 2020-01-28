@@ -21,7 +21,8 @@ import org.palladiosimulator.pcm.usagemodel.UsagemodelPackage;
 
 public class ModelHandler {
     private ResourceSet resourceSet;
-    private Resource resourceData;
+    private Resource resourceDataProcessing;
+    private Resource resourceRepository;
     private ModelAbstraction model;
 
     public ModelHandler(final String path) {
@@ -41,19 +42,22 @@ public class ModelHandler {
         this.resourceSet.setResourceFactoryRegistry(resourceRegistry);
     }
 
-    public DataSpecification loadDataSpecification() {
-        resourceData = loadResource(this.resourceSet, model.getDataprocessingPath());
+    public void trackModifications() {
+        resourceDataProcessing.setTrackingModification(true);
+        resourceRepository.setTrackingModification(true);
+    }
 
-        // resourceData.setTrackingModification(true);
+    public DataSpecification loadDataSpecification() {
+        resourceDataProcessing = loadResource(this.resourceSet, model.getDataprocessingPath());
 
         // TODO Throw exception if > 1 or cast fails
-        return (DataSpecification) resourceData.getContents().get(0);
+        return (DataSpecification) resourceDataProcessing.getContents().get(0);
     }
 
     public void saveDataSpecification() {
-        if (resourceData.isModified()) {
+        if (resourceDataProcessing.isModified()) {
             try {
-                resourceData.save(null);
+                resourceDataProcessing.save(null);
             } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -69,10 +73,21 @@ public class ModelHandler {
     }
 
     public Repository loadRepositoryModel() {
-        Resource resourceData = loadResource(this.resourceSet, model.getRepositoryModelPath());
+        resourceRepository = loadResource(this.resourceSet, model.getRepositoryModelPath());
 
         // TODO Throw exception if > 1 or cast fails
-        return (Repository) resourceData.getContents().get(0);
+        return (Repository) resourceRepository.getContents().get(0);
+    }
+
+    public void saveRepositoryModel() {
+        if (resourceRepository.isModified()) {
+            try {
+                resourceRepository.save(null);
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
     }
 
     public System loadAssemblyModel() {

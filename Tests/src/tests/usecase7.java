@@ -19,7 +19,7 @@ import setting.GenerationSettings;
 import util.MyLogger;
 import util.Util;
 
-public class usecase4 {
+public class usecase7 {
     // usecase1 applies context of systemcall to method
     // TODO restructure
 
@@ -28,11 +28,10 @@ public class usecase4 {
         final String currentPath = Util.getCurrentDir();
         MyLogger.info(currentPath);
 
-        String dataPath = currentPath + "\\..\\" + "usecase4";
+        String dataPath = currentPath + "\\..\\" + "usecase7";
         MyLogger.info(dataPath);
 
-        // TODO :Usecase for false
-        GenerationSettings settings = new GenerationSettings(true, ContextMaster.Characterizable, false);
+        GenerationSettings settings = new GenerationSettings(false, ContextMaster.Characterizable, true);
 
         ModelHandler modelloader = new ModelHandler(dataPath);
         DataSpecification dataSpec = modelloader.loadDataSpecification();
@@ -58,6 +57,6 @@ public class usecase4 {
         c_sys = dataSpecAbs.getContextByName(sys, "PUBLIC");
         c_method = dataSpecAbs.getContextByName(method, "PUBLIC");
         assertNotNull(c_sys);
-        assertNotNull(c_method);
+        // assertNotNull(c_method);
     }
 }
