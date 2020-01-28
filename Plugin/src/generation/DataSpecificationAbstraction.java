@@ -9,6 +9,7 @@ import org.palladiosimulator.pcm.dataprocessing.dataprocessing.characteristics.R
 import org.palladiosimulator.pcm.dataprocessing.dataprocessing.processing.DataProcessingContainer;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.context.Context;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.context.ContextCharacteristic;
+import org.palladiosimulator.pcm.dataprocessing.dynamicextension.context.ContextFactory;
 
 import util.MyLogger;
 
@@ -81,7 +82,7 @@ public class DataSpecificationAbstraction {
     public void createContextCharacteristic(CharacteristicContainer container,
             ContextCharacteristic characteristicData) {
 
-        MyContextCharacteristicImpl newContextCharacteristic = new MyContextCharacteristicImpl();
+        ContextCharacteristic newContextCharacteristic = ContextFactory.eINSTANCE.createContextCharacteristic();
 
         newContextCharacteristic.setCharacteristicType(characteristicData.getCharacteristicType());
 
