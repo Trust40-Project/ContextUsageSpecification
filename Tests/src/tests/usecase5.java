@@ -30,7 +30,7 @@ public class usecase5 {
         String dataPath = currentPath + "\\..\\" + "usecase5";
         MyLogger.info(dataPath);
 
-        GenerationSettings settings = new GenerationSettings(false);
+        GenerationSettings settings = new GenerationSettings(true);
 
         ModelHandler modelloader = new ModelHandler(dataPath);
         DataSpecification dataSpec = modelloader.loadDataSpecification();
@@ -68,6 +68,6 @@ public class usecase5 {
         assertNotNull(c_sys);
         assertNotNull(c_method);
         assertNull(c_method2_bc2);
-        assertNull(c_method2_bc3);
+        assertNotNull(c_method2_bc3);
     }
 }
