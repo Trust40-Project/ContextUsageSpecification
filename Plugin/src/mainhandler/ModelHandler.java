@@ -25,8 +25,8 @@ public class ModelHandler {
     private Resource resourceRepository;
     private ModelAbstraction model;
 
-    public ModelHandler(final String path) {
-        this.model = new ModelAbstraction(path);
+    public ModelHandler(final ModelAbstraction model) {
+        this.model = model;
         this.resourceSet = new ResourceSetImpl();
 
         DataprocessingPackage.eINSTANCE.eClass();

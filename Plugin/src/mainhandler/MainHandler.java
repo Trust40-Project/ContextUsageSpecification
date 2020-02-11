@@ -20,7 +20,7 @@ public class MainHandler {
 
         GenerationSettings settings = new GenerationSettings(true, ContextMaster.Combined, true);
 
-        ModelHandler modelloader = new ModelHandler(dataPath);
+        ModelHandler modelloader = new ModelHandler(new ModelAbstraction(dataPath, false));
         DataSpecification dataSpec = modelloader.loadDataSpecification();
         UsageModel usageModel = modelloader.loadUsageModel();
         Repository repo = modelloader.loadRepositoryModel();

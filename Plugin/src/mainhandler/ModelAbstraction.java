@@ -1,34 +1,52 @@
 package mainhandler;
 
 import util.MyLogger;
-import util.Util;
 
 public class ModelAbstraction {
-
     private String projectPath;
+    private boolean useDefault;
 
-    public ModelAbstraction(String path) {
+    public ModelAbstraction(String path, boolean useDefault) {
         this.projectPath = path;
+        this.useDefault = useDefault;
     }
 
-    // TODO add functionality
     public String getDataprocessingPath() {
-        MyLogger.info(projectPath + Util.getPathdataprocessing());
-        return projectPath + Util.getPathdataprocessing();
+        String name = PreferenceHandler.getPathdataprocessing();
+        if (useDefault)
+            name = "My.dataprocessing";
+        String path = projectPath + "/" + name;
+        MyLogger.info2(path);
+        return path;
     }
 
     public String getUsageModelPath() {
-        MyLogger.info(projectPath + Util.getPathusagemodel());
-        return projectPath + Util.getPathusagemodel();
+        String name = PreferenceHandler.getPathusagemodel();
+        if (useDefault)
+            name = "newUsageModel.usagemodel";
+
+        String path = projectPath + "/" + name;
+        MyLogger.info2(path);
+        return path;
     }
 
     public String getRepositoryModelPath() {
-        MyLogger.info(projectPath + Util.getPathrepositorymodel());
-        return projectPath + Util.getPathrepositorymodel();
+        String name = PreferenceHandler.getPathrepositorymodel();
+        if (useDefault)
+            name = "newRepository.repository";
+
+        String path = projectPath + "/" + name;
+        MyLogger.info2(path);
+        return path;
     }
 
     public String getAssemblyPath() {
-        MyLogger.info(projectPath + Util.getPathassembly());
-        return projectPath + Util.getPathassembly();
+        String name = PreferenceHandler.getPathassembly();
+        if (useDefault)
+            name = "newAssembly.system";
+
+        String path = projectPath + "/" + name;
+        MyLogger.info2(path);
+        return path;
     }
 }

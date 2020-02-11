@@ -8,12 +8,7 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 
-//TODO refactor name
 public class Util {
-    private final static String pathDataprocessing = "/My.dataprocessing";
-    private final static String pathUsageModel = "/newUsageModel.usagemodel";
-    private final static String pathAssembly = "/newAssembly.system";
-    private final static String pathRepositoryModel = "/newRepository.repository";
 
     public static String getCurrentDir() {
         IWorkspace ws = ResourcesPlugin.getWorkspace();
@@ -32,21 +27,5 @@ public class Util {
             list.add(p.getLocation().toString());
         }
         return list;
-    }
-
-    public static String getPathrepositorymodel() {
-        return pathRepositoryModel;
-    }
-
-    public static String getPathassembly() {
-        return pathAssembly;
-    }
-
-    public static String getPathusagemodel() {
-        return pathUsageModel;
-    }
-
-    public static String getPathdataprocessing() {
-        return pathDataprocessing;
     }
 }

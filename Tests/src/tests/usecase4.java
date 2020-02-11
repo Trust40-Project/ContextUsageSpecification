@@ -13,6 +13,7 @@ import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
 import generation.ContextHandler;
 import generation.DataSpecificationAbstraction;
+import mainhandler.ModelAbstraction;
 import mainhandler.ModelHandler;
 import setting.ContextMaster;
 import setting.GenerationSettings;
@@ -34,7 +35,7 @@ public class usecase4 {
         // TODO :Usecase for false
         GenerationSettings settings = new GenerationSettings(true, ContextMaster.Characterizable, false);
 
-        ModelHandler modelloader = new ModelHandler(dataPath);
+        ModelHandler modelloader = new ModelHandler(new ModelAbstraction(dataPath, true));
         DataSpecification dataSpec = modelloader.loadDataSpecification();
         UsageModel usageModel = modelloader.loadUsageModel();
         Repository repo = modelloader.loadRepositoryModel();
