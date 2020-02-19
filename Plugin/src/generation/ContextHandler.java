@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.modelversioning.emfprofile.Stereotype;
+import org.palladiosimulator.mdsdprofiles.api.ProfileAPI;
 import org.palladiosimulator.mdsdprofiles.api.StereotypeAPI;
 import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
@@ -218,6 +219,10 @@ public class ContextHandler {
                 newRC.setCharacteristics(newCC);
                 newRC.setRelatedEntity(newDPC);
                 dataSpecAbs.getDataSpec().getRelatedCharacteristics().add(newRC);
+
+                if (!ProfileAPI.isProfileApplied(ia.eResource(), "DataProcessing")) {
+                    ProfileAPI.applyProfile(ia.eResource(), "DataProcessing");
+                }
 
                 StereotypeAPI.applyStereotype(ia, "DataProcessingSpecification");
                 StereotypeAPI.setTaggedValue(ia, newDPC, "DataProcessingSpecification", "dataProcessingContainer");
