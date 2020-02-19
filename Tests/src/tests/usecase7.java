@@ -32,7 +32,7 @@ public class usecase7 {
         String dataPath = currentPath + "\\..\\" + "usecase7";
         MyLogger.info(dataPath);
 
-        GenerationSettings settings = new GenerationSettings(false, ContextMaster.Characterizable, true, false);
+        GenerationSettings settings = new GenerationSettings(true, ContextMaster.Characterizable, true, false);
 
         ModelHandler modelloader = new ModelHandler(new ModelAbstraction(dataPath, true));
         DataSpecification dataSpec = modelloader.loadDataSpecification();
@@ -44,20 +44,21 @@ public class usecase7 {
         DataSpecificationAbstraction dataSpecAbs = new DataSpecificationAbstraction(dataSpec);
 
         CharacteristicContainer sys = dataSpecAbs.getCharacteristicContainerByName("SystemCall1");
-        CharacteristicContainer method = dataSpecAbs.getCharacteristicContainerByName("method1");
+        CharacteristicContainer method = dataSpecAbs.getCharacteristicContainerByName("BasicComponent1_method1");
         assertNotNull(sys);
-        assertNotNull(method);
+        assertNull(method);
 
         Context c_sys = dataSpecAbs.getContextByName(sys, "PUBLIC");
-        Context c_method = dataSpecAbs.getContextByName(method, "PUBLIC");
         assertNotNull(c_sys);
-        assertNull(c_method);
 
         ch.execute();
 
+        method = dataSpecAbs.getCharacteristicContainerByName("BasicComponent1_method1");
+        assertNotNull(method);
+
         c_sys = dataSpecAbs.getContextByName(sys, "PUBLIC");
-        c_method = dataSpecAbs.getContextByName(method, "PUBLIC");
+        Context c_method = dataSpecAbs.getContextByName(method, "PUBLIC");
         assertNotNull(c_sys);
-        // assertNotNull(c_method);
+        assertNotNull(c_method);
     }
 }

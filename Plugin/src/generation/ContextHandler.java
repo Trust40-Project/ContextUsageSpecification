@@ -131,7 +131,7 @@ public class ContextHandler {
                 // Get all internal actions, and check applied data processing
                 for (AbstractAction aa : rdSeff.getSteps_Behaviour()) {
                     if (aa instanceof InternalAction) {
-                        applyContextsToInternalCall((InternalAction) aa, umcc);
+                        applyContextsToInternalCall((InternalAction) aa, bc, op, umcc);
                     } else if (aa instanceof ExternalCallAction) {
                         applyContextsToExternalCall((ExternalCallAction) aa, bcac, umcc);
                     }
@@ -167,7 +167,8 @@ public class ContextHandler {
         }
     }
 
-    public void applyContextsToInternalCall(InternalAction ia, CharacteristicContainer umcc) {
+    public void applyContextsToInternalCall(InternalAction ia, BasicComponent bc, OperationSignature op,
+            CharacteristicContainer umcc) {
         boolean isStereoTypeApplied = false;
         for (Stereotype stereotype : StereotypeAPI.getAppliedStereotypes(ia)) {
             MyLogger.info(stereotype.getName());
@@ -202,14 +203,18 @@ public class ContextHandler {
 
         if (!isStereoTypeApplied) {
             if (settings.isApplyStereotype()) {
-                // TODO names
+                String name = bc.getEntityName() + "_" + op.getEntityName();
+
                 CharacteristicContainer newCC = CharacteristicsFactory.eINSTANCE.createCharacteristicContainer();
+                newCC.setEntityName(name);
                 dataSpecAbs.getDataSpec().getCharacteristicContainer().add(newCC);
 
                 DataProcessingContainer newDPC = ProcessingFactory.eINSTANCE.createDataProcessingContainer();
+                newDPC.setEntityName(name);
                 dataSpecAbs.getDataSpec().getDataProcessingContainers().add(newDPC);
 
                 RelatedCharacteristics newRC = CharacteristicsFactory.eINSTANCE.createRelatedCharacteristics();
+                newRC.setEntityName(name);
                 newRC.setCharacteristics(newCC);
                 newRC.setRelatedEntity(newDPC);
                 dataSpecAbs.getDataSpec().getRelatedCharacteristics().add(newRC);
@@ -217,7 +222,7 @@ public class ContextHandler {
                 StereotypeAPI.applyStereotype(ia, "DataProcessingSpecification");
                 StereotypeAPI.setTaggedValue(ia, newDPC, "DataProcessingSpecification", "dataProcessingContainer");
 
-                applyContextsToInternalCall(ia, umcc);
+                applyContextsToInternalCall(ia, bc, op, umcc);
             }
         }
     }
