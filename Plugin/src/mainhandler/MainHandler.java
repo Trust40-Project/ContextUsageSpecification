@@ -12,15 +12,13 @@ import setting.ContextMaster;
 import setting.GenerationSettings;
 
 public class MainHandler {
-    // TODO needed?
-    // public static final boolean IS_ECLIPSE_RUNNING = Platform.isRunning();
 
     public void execute(String dataPath) {
         Objects.requireNonNull(dataPath);
 
         GenerationSettings settings = new GenerationSettings(true, ContextMaster.Combined, true);
 
-        ModelHandler modelloader = new ModelHandler(new ModelAbstraction(dataPath, false));
+        ModelHandler modelloader = new ModelHandler(new ModelAbstraction(dataPath, true));
         DataSpecification dataSpec = modelloader.loadDataSpecification();
         UsageModel usageModel = modelloader.loadUsageModel();
         Repository repo = modelloader.loadRepositoryModel();

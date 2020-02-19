@@ -9,6 +9,7 @@ import org.eclipse.emf.ecore.resource.Resource.Factory.Registry;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
+import org.modelversioning.emfprofile.registry.IProfileRegistry;
 import org.palladiosimulator.pcm.dataprocessing.dataprocessing.DataSpecification;
 import org.palladiosimulator.pcm.dataprocessing.dataprocessing.DataprocessingPackage;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.DynamicextensionPackage;
@@ -28,6 +29,9 @@ public class ModelHandler {
     public ModelHandler(final ModelAbstraction model) {
         this.model = model;
         this.resourceSet = new ResourceSetImpl();
+
+        // Needed to load MDSD profiles from beginning
+        IProfileRegistry.eINSTANCE.getClass();
 
         DataprocessingPackage.eINSTANCE.eClass();
         DynamicextensionPackage.eINSTANCE.eClass();
