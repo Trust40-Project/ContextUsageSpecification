@@ -32,7 +32,7 @@ public class usecase6c {
         String dataPath = currentPath + "\\..\\" + "usecase6";
         MyLogger.info(dataPath);
 
-        GenerationSettings settings = new GenerationSettings(false, ContextMaster.Combined, false);
+        GenerationSettings settings = new GenerationSettings(false, ContextMaster.Combined, false, false);
 
         ModelHandler modelloader = new ModelHandler(new ModelAbstraction(dataPath, true));
         DataSpecification dataSpec = modelloader.loadDataSpecification();

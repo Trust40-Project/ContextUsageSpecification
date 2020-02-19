@@ -4,13 +4,15 @@ public class GenerationSettings {
     private boolean createContextCharacteristic;
     private ContextMaster contextMaster;
     private boolean applyStereotype;
+    private boolean saveChanges;
 
-    public GenerationSettings(boolean createContextCharacteristic, ContextMaster contextMaster,
-            boolean applyStereotype) {
+    public GenerationSettings(boolean createContextCharacteristic, ContextMaster contextMaster, boolean applyStereotype,
+            boolean saveChanges) {
         super();
         this.createContextCharacteristic = createContextCharacteristic;
         this.contextMaster = contextMaster;
         this.applyStereotype = applyStereotype;
+        this.saveChanges = saveChanges;
     }
 
     public boolean isCreateContextCharacteristic() {
@@ -23,5 +25,9 @@ public class GenerationSettings {
 
     public boolean isApplyStereotype() {
         return applyStereotype;
+    }
+
+    public boolean isSaveChanges() {
+        return saveChanges;
     }
 }

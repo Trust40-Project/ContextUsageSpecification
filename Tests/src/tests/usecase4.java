@@ -33,7 +33,7 @@ public class usecase4 {
         MyLogger.info(dataPath);
 
         // TODO :Usecase for false
-        GenerationSettings settings = new GenerationSettings(true, ContextMaster.Characterizable, false);
+        GenerationSettings settings = new GenerationSettings(true, ContextMaster.Characterizable, false, false);
 
         ModelHandler modelloader = new ModelHandler(new ModelAbstraction(dataPath, true));
         DataSpecification dataSpec = modelloader.loadDataSpecification();
