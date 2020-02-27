@@ -54,7 +54,6 @@ public class ModelHandler {
     public DataSpecification loadDataSpecification() {
         resourceDataProcessing = loadResource(this.resourceSet, model.getDataprocessingPath());
 
-        // TODO Throw exception if > 1 or cast fails
         return (DataSpecification) resourceDataProcessing.getContents().get(0);
     }
 
@@ -63,7 +62,6 @@ public class ModelHandler {
             try {
                 resourceDataProcessing.save(null);
             } catch (IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
@@ -72,14 +70,12 @@ public class ModelHandler {
     public UsageModel loadUsageModel() {
         Resource resourceData = loadResource(this.resourceSet, model.getUsageModelPath());
 
-        // TODO Throw exception if > 1 or cast fails
         return (UsageModel) resourceData.getContents().get(0);
     }
 
     public Repository loadRepositoryModel() {
         resourceRepository = loadResource(this.resourceSet, model.getRepositoryModelPath());
 
-        // TODO Throw exception if > 1 or cast fails
         return (Repository) resourceRepository.getContents().get(0);
     }
 
@@ -88,7 +84,6 @@ public class ModelHandler {
             try {
                 resourceRepository.save(null);
             } catch (IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
@@ -97,7 +92,6 @@ public class ModelHandler {
     public System loadAssemblyModel() {
         Resource resourceData = loadResource(this.resourceSet, model.getAssemblyPath());
 
-        // TODO Throw exception if > 1 or cast fails
         return (System) resourceData.getContents().get(0);
     }
 

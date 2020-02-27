@@ -31,19 +31,19 @@ import org.palladiosimulator.pcm.system.System;
 import org.palladiosimulator.pcm.usagemodel.EntryLevelSystemCall;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
-import setting.GenerationSettings;
+import setting.Settings;
 import util.DataProcessingPrinter;
 import util.MyLogger;
 
 public class ContextHandler {
-    private final GenerationSettings settings;
+    private final Settings settings;
     private final DataSpecificationAbstraction dataSpecAbs;
     private final UsageModelAbstraction usageModelAbs;
     private final Repository repo;
     private final AssemblyAbstraction assemblyAbs;
 
-    public ContextHandler(final GenerationSettings settings, final DataSpecification dataSpec,
-            final UsageModel usageModel, final Repository repo, final System system) {
+    public ContextHandler(final Settings settings, final DataSpecification dataSpec, final UsageModel usageModel,
+            final Repository repo, final System system) {
         this.settings = settings;
         this.dataSpecAbs = new DataSpecificationAbstraction(dataSpec);
         this.usageModelAbs = new UsageModelAbstraction(usageModel, dataSpecAbs);
@@ -68,7 +68,6 @@ public class ContextHandler {
                 if (containerCharacterizable != null) {
                     applyContextToSystemCall(systemCall, containerCharacterizable);
                 } else {
-                    // TODO leave loop as well or throw exception
                     MyLogger.error("Stereotype Characterizable not applied");
                 }
                 break;
@@ -173,7 +172,6 @@ public class ContextHandler {
         boolean isStereoTypeApplied = false;
         for (Stereotype stereotype : StereotypeAPI.getAppliedStereotypes(ia)) {
             MyLogger.info(stereotype.getName());
-            // TODO proper cast or check to DataProcessingSpecification
             if ((stereotype.getName().equals("DataProcessingSpecification"))) {
                 isStereoTypeApplied = true;
 
@@ -242,7 +240,6 @@ public class ContextHandler {
         for (ContextCharacteristic c : dataSpecAbs.getContextCharacteristic(applyFrom)) {
             boolean contextApplied = false;
             for (ContextCharacteristic c2 : dataSpecAbs.getContextCharacteristic(applyTo)) {
-                // TODO anoter compare issue
                 // if (c.getCharacteristicType() == c2.getCharacteristicType()) {
                 if (c.getCharacteristicType().getId().equalsIgnoreCase(c2.getCharacteristicType().getId())) {
                     MyLogger.info2("Apply:" + applyFrom.getEntityName() + " to " + applyTo.getEntityName());

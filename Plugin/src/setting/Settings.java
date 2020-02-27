@@ -1,12 +1,12 @@
 package setting;
 
-public class GenerationSettings {
+public class Settings {
     private boolean createContextCharacteristic;
     private ContextMaster contextMaster;
     private boolean applyStereotype;
     private boolean saveChanges;
 
-    public GenerationSettings(boolean createContextCharacteristic, ContextMaster contextMaster, boolean applyStereotype,
+    public Settings(boolean createContextCharacteristic, ContextMaster contextMaster, boolean applyStereotype,
             boolean saveChanges) {
         super();
         this.createContextCharacteristic = createContextCharacteristic;

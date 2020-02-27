@@ -1,8 +1,6 @@
 package util;
 
 public class MyLogger {
-    // TODO use diffenret logger
-    // public static final Logger LOGGER = PlatformUI.getWorkbench().getService(Logger.class);
 
     private static MyLogger instance = null;
     private static boolean isActive = true;

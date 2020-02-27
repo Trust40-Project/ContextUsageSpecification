@@ -41,7 +41,6 @@ public class UsageModelAbstraction {
         for (Stereotype stereotype : StereotypeAPI.getAppliedStereotypes(scenarioBehaviour)) {
             MyLogger.info(stereotype.getName());
 
-            // TODO proper cast or check to Characterizable
             if ((stereotype.getName().equals("Characterizable"))) {
                 for (EStructuralFeature structuralFeature : StereotypeAPI.getParameters(stereotype)) {
                     String name = structuralFeature.getName();
@@ -73,7 +72,6 @@ public class UsageModelAbstraction {
         // Iterate applied stereotypes, look for
         for (Stereotype stereotype : StereotypeAPI.getAppliedStereotypes(systemCall)) {
 
-            // TODO proper cast or check to dataprocessing
             if ((stereotype.getName().equals("DataProcessingSpecification"))) {
 
                 for (EStructuralFeature structuralFeature : StereotypeAPI.getParameters(stereotype)) {

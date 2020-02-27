@@ -36,7 +36,7 @@
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
-            class="mainhandler.PreferenceHandler"
+            class="setting.PreferenceHandler"
             id="t2"
             name="Preferences of ContextUsageSpecification">
       </page>

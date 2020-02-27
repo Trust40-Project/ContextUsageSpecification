@@ -29,14 +29,11 @@ public class DataSpecificationAbstraction {
         for (RelatedCharacteristics rc : dataSpec.getRelatedCharacteristics()) {
             if (rc.getRelatedEntity() == dpc) {
                 cc = rc.getCharacteristics();
-                // TODO more than 1 possible? for each match
                 break;
             }
 
-            // TODO again problem with compare
             if (rc.getRelatedEntity().getId().equalsIgnoreCase(dpc.getId())) {
                 cc = rc.getCharacteristics();
-                // TODO more than 1 possible? for each match
                 break;
             }
         }

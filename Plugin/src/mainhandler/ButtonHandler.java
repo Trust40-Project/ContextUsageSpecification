@@ -6,8 +6,8 @@ import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 
+import setting.PreferenceHandler;
 import util.MyLogger;
-import util.Util;
 
 public class ButtonHandler extends AbstractHandler {
 
@@ -18,17 +18,11 @@ public class ButtonHandler extends AbstractHandler {
         MyLogger.info("ButtonHandler-Start");
         MyLogger.disable();
 
-        // TODO do properly, currently use active workspace, only 1 project allowed
-        // final String currentPath = Util.getCurrentDir();
-        // MyLogger.info(currentPath);
+        PreferenceHandler.setDefault();
 
-        // Call Mainhandler with datapath
-        // new MainHandler().execute(currentPath);
-
-        for (String path : Util.getAllDir()) {
-            MyLogger.info2(path);
-            new MainHandler().execute(path);
-        }
+        String path = PreferenceHandler.getProjectPath();
+        MyLogger.info2(path);
+        new MainHandler().execute(path);
 
         MyLogger.enable();
         MyLogger.info("ButtonHandler-End");

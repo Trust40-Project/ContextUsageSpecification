@@ -8,17 +8,17 @@ import org.palladiosimulator.pcm.system.System;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
 import generation.ContextHandler;
-import setting.ContextMaster;
-import setting.GenerationSettings;
+import setting.PreferenceHandler;
+import setting.Settings;
 
 public class MainHandler {
 
     public void execute(String dataPath) {
         Objects.requireNonNull(dataPath);
 
-        GenerationSettings settings = new GenerationSettings(true, ContextMaster.Combined, true, false);
+        Settings settings = PreferenceHandler.getSettingsFromPreferences();
 
-        ModelHandler modelloader = new ModelHandler(new ModelAbstraction(dataPath, true));
+        ModelHandler modelloader = new ModelHandler(new ModelAbstraction(dataPath));
         DataSpecification dataSpec = modelloader.loadDataSpecification();
         UsageModel usageModel = modelloader.loadUsageModel();
         Repository repo = modelloader.loadRepositoryModel();

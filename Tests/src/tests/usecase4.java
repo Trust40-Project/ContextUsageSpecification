@@ -16,7 +16,7 @@ import generation.DataSpecificationAbstraction;
 import mainhandler.ModelAbstraction;
 import mainhandler.ModelHandler;
 import setting.ContextMaster;
-import setting.GenerationSettings;
+import setting.Settings;
 import util.MyLogger;
 import util.Util;
 
@@ -33,9 +33,9 @@ public class usecase4 {
         MyLogger.info(dataPath);
 
         // TODO :Usecase for false
-        GenerationSettings settings = new GenerationSettings(true, ContextMaster.Characterizable, false, false);
+        Settings settings = new Settings(true, ContextMaster.Characterizable, false, false);
 
-        ModelHandler modelloader = new ModelHandler(new ModelAbstraction(dataPath, true));
+        ModelHandler modelloader = new ModelHandler(new ModelAbstraction(dataPath));
         DataSpecification dataSpec = modelloader.loadDataSpecification();
         UsageModel usageModel = modelloader.loadUsageModel();
         Repository repo = modelloader.loadRepositoryModel();
