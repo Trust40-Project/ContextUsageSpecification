@@ -1,11 +1,5 @@
 package generation;
 
-import java.util.Collection;
-
-import org.eclipse.emf.ecore.EStructuralFeature;
-import org.modelversioning.emfprofile.Stereotype;
-import org.palladiosimulator.mdsdprofiles.api.ProfileAPI;
-import org.palladiosimulator.mdsdprofiles.api.StereotypeAPI;
 import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.ProvidedDelegationConnector;
@@ -253,53 +247,28 @@ public class ContextHandler {
      */
     private void applyContextsToInternalCall(InternalAction internalAction, CharacteristicContainer containerToApply,
             String nameForNewContainers) {
-        boolean isStereoTypeApplied = false;
-        for (Stereotype stereotype : StereotypeAPI.getAppliedStereotypes(internalAction)) {
-            Logger.infoDetailed(stereotype.getName());
-            if ((stereotype.getName().equals("DataProcessingSpecification"))) {
-                isStereoTypeApplied = true;
 
-                Collection<EStructuralFeature> list = StereotypeAPI.getParameters(stereotype);
-                for (EStructuralFeature esf : list) {
-                    String name = esf.getName();
-                    Logger.infoDetailed(name);
-                    Object obj = StereotypeAPI.getTaggedValue(internalAction, name, stereotype.getName());
-                    if (obj != null) {
-                        Logger.infoDetailed(obj.getClass().getSimpleName());
-                        DataProcessingContainer dpc = (DataProcessingContainer) obj;
+        if (MdsdAbstraction.isDataProcessingStereotypeApplied(internalAction)) {
+            DataProcessingContainer dpc = MdsdAbstraction.getDataProcessingFromStereotype(internalAction);
 
-                        CharacteristicContainer cc2 = dataSpecAbs
-                                .getCharacteristicContainerForDataProcessingContainer(dpc);
+            CharacteristicContainer containerTarget = dataSpecAbs
+                    .getCharacteristicContainerForDataProcessingContainer(dpc);
 
-                        if (cc2 == null) {
-                            Logger.error("DataProcessingContainer(" + dpc.getEntityName()
-                                    + ") couldn't be matched to CharacteristicContainer");
-                        } else {
-                            applyContexts(cc2, containerToApply);
-                        }
-                    } else {
-                        Logger.error("Stereotype applied put no dataprocessing container selected!");
-                    }
-                }
+            if (containerTarget != null) {
+                applyContexts(containerTarget, containerToApply);
+            } else {
+                Logger.error("DataProcessingContainer(" + dpc.getEntityName()
+                        + ") couldn't be matched to CharacteristicContainer");
             }
-        }
-
-        if (!isStereoTypeApplied) {
+        } else {
+            // Check setting if stereotype should be applied and containers be created
             if (settings.isApplyStereotype()) {
                 Logger.info2("APPLY STEREOTYPE TO " + internalAction.getEntityName());
 
                 DataProcessingContainer newDPC = dataSpecAbs
                         .createNewCharacteristicPairForInternalAction(nameForNewContainers);
 
-                // Make sure Profile is applied on this resource / in repository
-                if (!ProfileAPI.isProfileApplied(internalAction.eResource(), "DataProcessing")) {
-                    ProfileAPI.applyProfile(internalAction.eResource(), "DataProcessing");
-                }
-
-                // Apply stereotype to internal action
-                StereotypeAPI.applyStereotype(internalAction, "DataProcessingSpecification");
-                StereotypeAPI.setTaggedValue(internalAction, newDPC, "DataProcessingSpecification",
-                        "dataProcessingContainer");
+                MdsdAbstraction.applyStereoTypeToInternalAction(internalAction, newDPC);
 
                 // Call same function again, since stereotype now applied
                 applyContextsToInternalCall(internalAction, containerToApply, nameForNewContainers);

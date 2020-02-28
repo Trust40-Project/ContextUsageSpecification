@@ -8,6 +8,7 @@ import org.eclipse.core.commands.ExecutionException;
 import org.junit.internal.TextListener;
 import org.junit.runner.JUnitCore;
 
+import setting.PreferenceHandler;
 import tests.usecase1;
 import tests.usecase2;
 import tests.usecase3;
@@ -27,6 +28,9 @@ public class ButtonHandler extends AbstractHandler {
 
         Logger.infoDetailed("Tests-Start");
         Logger.disable();
+
+        // Needed here to ensure default values are set if PreferencesPage has never been opened
+        PreferenceHandler.setDefault();
 
         JUnitCore junit = new JUnitCore();
         junit.addListener(new TextListener(System.out));

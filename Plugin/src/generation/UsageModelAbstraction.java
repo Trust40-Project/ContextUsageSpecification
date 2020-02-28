@@ -2,9 +2,6 @@ package generation;
 
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.ecore.EStructuralFeature;
-import org.modelversioning.emfprofile.Stereotype;
-import org.palladiosimulator.mdsdprofiles.api.StereotypeAPI;
 import org.palladiosimulator.pcm.dataprocessing.dataprocessing.characteristics.CharacteristicContainer;
 import org.palladiosimulator.pcm.dataprocessing.dataprocessing.processing.DataProcessingContainer;
 import org.palladiosimulator.pcm.usagemodel.AbstractUserAction;
@@ -38,27 +35,12 @@ public class UsageModelAbstraction {
     }
 
     public CharacteristicContainer getAppliedCharacterizableContainer() {
-        CharacteristicContainer containerCharacterizable = null;
-
         ScenarioBehaviour scenarioBehaviour = getScenarioBehaviour();
         Logger.infoDetailed(scenarioBehaviour.getEntityName());
 
-        // Iterate applied stereotypes, look for Characterizable
-        for (Stereotype stereotype : StereotypeAPI.getAppliedStereotypes(scenarioBehaviour)) {
-            Logger.infoDetailed(stereotype.getName());
+        CharacteristicContainer containerCharacterizable = MdsdAbstraction
+                .getCharacteristicContainerFromStereotype(scenarioBehaviour);
 
-            if ((stereotype.getName().equals("Characterizable"))) {
-                for (EStructuralFeature structuralFeature : StereotypeAPI.getParameters(stereotype)) {
-                    String name = structuralFeature.getName();
-                    Object obj = StereotypeAPI.getTaggedValue(scenarioBehaviour, name, stereotype.getName());
-                    if (obj instanceof CharacteristicContainer) {
-                        containerCharacterizable = (CharacteristicContainer) obj;
-                    } else {
-                        Logger.error("CharacteristicContainer not selected");
-                    }
-                }
-            }
-        }
         return containerCharacterizable;
     }
 
@@ -75,25 +57,14 @@ public class UsageModelAbstraction {
     public CharacteristicContainer getAppliedContainer(EntryLevelSystemCall systemCall) {
         CharacteristicContainer chracteristicContainer = null;
 
-        // Iterate applied stereotypes, look for
-        for (Stereotype stereotype : StereotypeAPI.getAppliedStereotypes(systemCall)) {
+        if (MdsdAbstraction.isDataProcessingStereotypeApplied(systemCall)) {
+            DataProcessingContainer dpc = MdsdAbstraction.getDataProcessingFromStereotype(systemCall);
 
-            if ((stereotype.getName().equals("DataProcessingSpecification"))) {
+            chracteristicContainer = dataSpecAbs.getCharacteristicContainerForDataProcessingContainer(dpc);
 
-                for (EStructuralFeature structuralFeature : StereotypeAPI.getParameters(stereotype)) {
-                    String name = structuralFeature.getName();
-                    Object obj = StereotypeAPI.getTaggedValue(systemCall, name, stereotype.getName());
-                    if (obj instanceof DataProcessingContainer) {
-                        DataProcessingContainer dpc = (DataProcessingContainer) obj;
-                        chracteristicContainer = dataSpecAbs.getCharacteristicContainerForDataProcessingContainer(dpc);
-                        if (chracteristicContainer == null) {
-                            Logger.error("DataProcessingContainer(" + dpc.getEntityName()
-                                    + ") couldn't be matched to CharacteristicContainer");
-                        }
-                    } else {
-                        Logger.error("CharacteristicContainer not selected");
-                    }
-                }
+            if (chracteristicContainer == null) {
+                Logger.error("DataProcessingContainer(" + dpc.getEntityName()
+                        + ") couldn't be matched to CharacteristicContainer");
             }
         }
 
