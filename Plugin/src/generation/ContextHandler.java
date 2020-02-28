@@ -11,10 +11,7 @@ import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.ProvidedDelegationConnector;
 import org.palladiosimulator.pcm.dataprocessing.dataprocessing.DataSpecification;
 import org.palladiosimulator.pcm.dataprocessing.dataprocessing.characteristics.CharacteristicContainer;
-import org.palladiosimulator.pcm.dataprocessing.dataprocessing.characteristics.CharacteristicsFactory;
-import org.palladiosimulator.pcm.dataprocessing.dataprocessing.characteristics.RelatedCharacteristics;
 import org.palladiosimulator.pcm.dataprocessing.dataprocessing.processing.DataProcessingContainer;
-import org.palladiosimulator.pcm.dataprocessing.dataprocessing.processing.ProcessingFactory;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.context.ContextCharacteristic;
 import org.palladiosimulator.pcm.repository.BasicComponent;
 import org.palladiosimulator.pcm.repository.OperationProvidedRole;
@@ -167,10 +164,10 @@ public class ContextHandler {
         }
     }
 
-    public void applyContextsToInternalCall(InternalAction ia, BasicComponent bc, OperationSignature op,
+    public void applyContextsToInternalCall(InternalAction internalAction, BasicComponent bc, OperationSignature op,
             CharacteristicContainer umcc) {
         boolean isStereoTypeApplied = false;
-        for (Stereotype stereotype : StereotypeAPI.getAppliedStereotypes(ia)) {
+        for (Stereotype stereotype : StereotypeAPI.getAppliedStereotypes(internalAction)) {
             MyLogger.info(stereotype.getName());
             if ((stereotype.getName().equals("DataProcessingSpecification"))) {
                 isStereoTypeApplied = true;
@@ -179,7 +176,7 @@ public class ContextHandler {
                 for (EStructuralFeature esf : list) {
                     String name = esf.getName();
                     MyLogger.info(name);
-                    Object obj = StereotypeAPI.getTaggedValue(ia, name, stereotype.getName());
+                    Object obj = StereotypeAPI.getTaggedValue(internalAction, name, stereotype.getName());
                     if (obj != null) {
                         MyLogger.info(obj.getClass().getSimpleName());
                         DataProcessingContainer dpc = (DataProcessingContainer) obj;
@@ -202,30 +199,25 @@ public class ContextHandler {
 
         if (!isStereoTypeApplied) {
             if (settings.isApplyStereotype()) {
+                MyLogger.info2("APPLY STEREOTYPE TO " + internalAction.getEntityName());
+
+                // Name for newly created containers
                 String name = bc.getEntityName() + "_" + op.getEntityName();
 
-                CharacteristicContainer newCC = CharacteristicsFactory.eINSTANCE.createCharacteristicContainer();
-                newCC.setEntityName(name);
-                dataSpecAbs.getDataSpec().getCharacteristicContainer().add(newCC);
+                DataProcessingContainer newDPC = dataSpecAbs.createNewCharacteristicPairForInternalAction(name);
 
-                DataProcessingContainer newDPC = ProcessingFactory.eINSTANCE.createDataProcessingContainer();
-                newDPC.setEntityName(name);
-                dataSpecAbs.getDataSpec().getDataProcessingContainers().add(newDPC);
-
-                RelatedCharacteristics newRC = CharacteristicsFactory.eINSTANCE.createRelatedCharacteristics();
-                newRC.setEntityName(name);
-                newRC.setCharacteristics(newCC);
-                newRC.setRelatedEntity(newDPC);
-                dataSpecAbs.getDataSpec().getRelatedCharacteristics().add(newRC);
-
-                if (!ProfileAPI.isProfileApplied(ia.eResource(), "DataProcessing")) {
-                    ProfileAPI.applyProfile(ia.eResource(), "DataProcessing");
+                // Make sure Profile is applied on this resource / in repository
+                if (!ProfileAPI.isProfileApplied(internalAction.eResource(), "DataProcessing")) {
+                    ProfileAPI.applyProfile(internalAction.eResource(), "DataProcessing");
                 }
 
-                StereotypeAPI.applyStereotype(ia, "DataProcessingSpecification");
-                StereotypeAPI.setTaggedValue(ia, newDPC, "DataProcessingSpecification", "dataProcessingContainer");
+                // Apply stereotype to internal action
+                StereotypeAPI.applyStereotype(internalAction, "DataProcessingSpecification");
+                StereotypeAPI.setTaggedValue(internalAction, newDPC, "DataProcessingSpecification",
+                        "dataProcessingContainer");
 
-                applyContextsToInternalCall(ia, bc, op, umcc);
+                // Call same function again, since stereotype now applied
+                applyContextsToInternalCall(internalAction, bc, op, umcc);
             }
         }
     }
@@ -252,9 +244,7 @@ public class ContextHandler {
             if (!contextApplied) {
                 if (settings.isCreateContextCharacteristic()) {
                     MyLogger.info2("CREATE NEW CONTEXTCONTAINER");
-                    MyLogger.info("Before:" + applyTo.getOwnedCharacteristics().size());
                     dataSpecAbs.createContextCharacteristic(applyTo, c);
-                    MyLogger.info("After:" + applyTo.getOwnedCharacteristics().size());
                 }
             }
         }

@@ -5,8 +5,10 @@ import org.eclipse.emf.common.util.EList;
 import org.palladiosimulator.pcm.dataprocessing.dataprocessing.DataSpecification;
 import org.palladiosimulator.pcm.dataprocessing.dataprocessing.characteristics.Characteristic;
 import org.palladiosimulator.pcm.dataprocessing.dataprocessing.characteristics.CharacteristicContainer;
+import org.palladiosimulator.pcm.dataprocessing.dataprocessing.characteristics.CharacteristicsFactory;
 import org.palladiosimulator.pcm.dataprocessing.dataprocessing.characteristics.RelatedCharacteristics;
 import org.palladiosimulator.pcm.dataprocessing.dataprocessing.processing.DataProcessingContainer;
+import org.palladiosimulator.pcm.dataprocessing.dataprocessing.processing.ProcessingFactory;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.context.Context;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.context.ContextCharacteristic;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.context.ContextFactory;
@@ -86,5 +88,26 @@ public class DataSpecificationAbstraction {
         applyContext(newContextCharacteristic, characteristicData);
 
         container.getOwnedCharacteristics().add(newContextCharacteristic);
+    }
+
+    public DataProcessingContainer createNewCharacteristicPairForInternalAction(String name) {
+        // Create new CharacteristicContainer
+        CharacteristicContainer newCC = CharacteristicsFactory.eINSTANCE.createCharacteristicContainer();
+        newCC.setEntityName(name);
+        dataSpec.getCharacteristicContainer().add(newCC);
+
+        // Create new DataContainer
+        DataProcessingContainer newDPC = ProcessingFactory.eINSTANCE.createDataProcessingContainer();
+        newDPC.setEntityName(name);
+        dataSpec.getDataProcessingContainers().add(newDPC);
+
+        // Create new RelatedCharacteristics and set attributes accordingly
+        RelatedCharacteristics newRC = CharacteristicsFactory.eINSTANCE.createRelatedCharacteristics();
+        newRC.setEntityName(name);
+        newRC.setCharacteristics(newCC);
+        newRC.setRelatedEntity(newDPC);
+        dataSpec.getRelatedCharacteristics().add(newRC);
+
+        return newDPC;
     }
 }

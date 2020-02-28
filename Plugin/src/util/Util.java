@@ -10,6 +10,8 @@ import org.eclipse.core.resources.ResourcesPlugin;
 
 public class Util {
 
+    // static strings
+
     public static String getCurrentDir() {
         IWorkspace ws = ResourcesPlugin.getWorkspace();
         IWorkspaceRoot wsr = ws.getRoot();
