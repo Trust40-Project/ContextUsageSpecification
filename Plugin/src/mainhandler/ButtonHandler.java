@@ -7,25 +7,37 @@ import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 
 import setting.PreferenceHandler;
-import util.MyLogger;
+import util.Logger;
 
+/**
+ * Connection between GUI and MainHandler
+ * 
+ * Referenced in plugin.xml
+ * 
+ * @author Thomas Lieb
+ *
+ */
 public class ButtonHandler extends AbstractHandler {
 
+    /**
+     * Executed when GUI button is pressed
+     */
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
         Objects.requireNonNull(event);
 
-        MyLogger.info("ButtonHandler-Start");
-        MyLogger.disable();
+        Logger.infoDetailed("ButtonHandler-Start");
+        Logger.disable();
 
+        // Needed here to ensure default values are set if PreferencesPage has never been opened
         PreferenceHandler.setDefault();
 
         String path = PreferenceHandler.getProjectPath();
-        MyLogger.info2(path);
+        Logger.info2(path);
         new MainHandler().execute(path);
 
-        MyLogger.enable();
-        MyLogger.info("ButtonHandler-End");
+        Logger.enable();
+        Logger.infoDetailed("ButtonHandler-End");
 
         return null;
     }

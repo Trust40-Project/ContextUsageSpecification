@@ -17,7 +17,7 @@ import tests.usecase6a;
 import tests.usecase6b;
 import tests.usecase6c;
 import tests.usecase7;
-import util.MyLogger;
+import util.Logger;
 
 public class ButtonHandler extends AbstractHandler {
 
@@ -25,8 +25,8 @@ public class ButtonHandler extends AbstractHandler {
     public Object execute(ExecutionEvent event) throws ExecutionException {
         Objects.requireNonNull(event);
 
-        MyLogger.info("Tests-Start");
-        MyLogger.disable();
+        Logger.infoDetailed("Tests-Start");
+        Logger.disable();
 
         JUnitCore junit = new JUnitCore();
         junit.addListener(new TextListener(System.out));
@@ -40,8 +40,8 @@ public class ButtonHandler extends AbstractHandler {
         junit.run(usecase6c.class);
         junit.run(usecase7.class);
 
-        MyLogger.enable();
-        MyLogger.info("Tests-End");
+        Logger.enable();
+        Logger.infoDetailed("Tests-End");
 
         return null;
     }

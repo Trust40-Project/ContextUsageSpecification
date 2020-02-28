@@ -8,9 +8,20 @@ import org.palladiosimulator.pcm.core.composition.ProvidedDelegationConnector;
 import org.palladiosimulator.pcm.repository.OperationProvidedRole;
 import org.palladiosimulator.pcm.system.System;
 
+/**
+ * Abstraction for handling related to Assembly/System
+ * 
+ * @author Thomas Lieb
+ *
+ */
 public class AssemblyAbstraction {
     private final System system;
 
+    /**
+     * Constructor
+     * 
+     * @param system
+     */
     public AssemblyAbstraction(final System system) {
         this.system = system;
     }

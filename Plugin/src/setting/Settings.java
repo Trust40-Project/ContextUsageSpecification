@@ -1,5 +1,11 @@
 package setting;
 
+/**
+ * Contains all settings which alter behaviour of contexthandler
+ * 
+ * @author Thomas Lieb
+ *
+ */
 public class Settings {
     private boolean createContextCharacteristic;
     private ContextMaster contextMaster;

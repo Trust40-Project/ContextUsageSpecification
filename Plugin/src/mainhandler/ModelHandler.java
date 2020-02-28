@@ -20,6 +20,14 @@ import org.palladiosimulator.pcm.system.SystemPackage;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 import org.palladiosimulator.pcm.usagemodel.UsagemodelPackage;
 
+/**
+ * Handles loading and saving of models/resources
+ * 
+ * Initialises MDSD profile and handles EMF eCore model
+ * 
+ * @author Thomas Lieb
+ *
+ */
 public class ModelHandler {
     private ResourceSet resourceSet;
     private Resource resourceDataProcessing;
@@ -46,6 +54,9 @@ public class ModelHandler {
         this.resourceSet.setResourceFactoryRegistry(resourceRegistry);
     }
 
+    /**
+     * Enables tracking of modifications for classes which need to be saved if setting is turned on
+     */
     public void trackModifications() {
         resourceDataProcessing.setTrackingModification(true);
         resourceRepository.setTrackingModification(true);

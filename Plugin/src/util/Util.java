@@ -8,10 +8,22 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 
+/**
+ * Helper functions and static strings
+ * 
+ * @author Thomas Lieb
+ *
+ */
 public class Util {
 
-    // static strings
+    /**
+     * 
+     */
+    public static String x;
 
+    /**
+     * @return Path of first active projects in workspace
+     */
     public static String getCurrentDir() {
         IWorkspace ws = ResourcesPlugin.getWorkspace();
         IWorkspaceRoot wsr = ws.getRoot();
@@ -21,6 +33,9 @@ public class Util {
         return "";
     }
 
+    /**
+     * @return List of all paths of current active projects in workspace
+     */
     public static List<String> getAllDir() {
         ArrayList<String> list = new ArrayList<>();
         IWorkspace ws = ResourcesPlugin.getWorkspace();

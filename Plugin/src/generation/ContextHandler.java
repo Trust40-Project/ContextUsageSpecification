@@ -30,8 +30,16 @@ import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
 import setting.Settings;
 import util.DataProcessingPrinter;
-import util.MyLogger;
+import util.Logger;
 
+/**
+ * Contains all logic / functionality
+ * 
+ * Needs the 4 different models as input, calls the different abstraction classes for specific logic
+ * 
+ * @author Thomas Lieb
+ *
+ */
 public class ContextHandler {
     private final Settings settings;
     private final DataSpecificationAbstraction dataSpecAbs;
@@ -39,6 +47,15 @@ public class ContextHandler {
     private final Repository repo;
     private final AssemblyAbstraction assemblyAbs;
 
+    /**
+     * Constructor
+     * 
+     * @param settings
+     * @param dataSpec
+     * @param usageModel
+     * @param repo
+     * @param system
+     */
     public ContextHandler(final Settings settings, final DataSpecification dataSpec, final UsageModel usageModel,
             final Repository repo, final System system) {
         this.settings = settings;
@@ -48,24 +65,32 @@ public class ContextHandler {
         this.assemblyAbs = new AssemblyAbstraction(system);
     }
 
+    /**
+     * Entrypoint for mainhandler
+     */
     public void execute() {
         applyContextToAllSystemCalls();
     }
 
-    public void applyContextToAllSystemCalls() {
-        MyLogger.info("\nAppling Context to all methods");
+    /**
+     * Iterate all SystemCalls, call applyContextToSystemCall for each one with matching
+     * characteristicContainer according to settings
+     */
+    private void applyContextToAllSystemCalls() {
+        Logger.infoDetailed("\nAppling Context to all methods");
 
         CharacteristicContainer containerCharacterizable = usageModelAbs.getAppliedCharacterizableContainer();
 
         for (EntryLevelSystemCall systemCall : usageModelAbs.getListOfEntryLevelSystemCalls()) {
             CharacteristicContainer containerDataProcessing = usageModelAbs.getAppliedContainer(systemCall);
 
+            // Depending on ContextMaster a different characteristicContainer is used to be applied
             switch (settings.getContextMaster()) {
             case Characterizable:
                 if (containerCharacterizable != null) {
                     applyContextToSystemCall(systemCall, containerCharacterizable);
                 } else {
-                    MyLogger.error("Stereotype Characterizable not applied");
+                    Logger.error("Stereotype Characterizable not applied");
                 }
                 break;
             case DataProcessing:
@@ -81,17 +106,27 @@ public class ContextHandler {
                         applyContextToSystemCall(systemCall, containerCharacterizable);
                     }
                 }
+                break;
+            default:
+                break;
             }
         }
     }
 
-    public void applyContextToSystemCall(EntryLevelSystemCall elsc, CharacteristicContainer containerToApply) {
-        MyLogger.info("\nAppling Context to SystemCall");
-        MyLogger.info(elsc.getEntityName());
-        OperationProvidedRole opr = elsc.getProvidedRole_EntryLevelSystemCall();
-        MyLogger.info(opr.getEntityName());
-        OperationSignature op = elsc.getOperationSignature__EntryLevelSystemCall();
-        MyLogger.info(op.getEntityName());
+    /**
+     * Applies context from containerToApply to BasicComponent called by entryLevelSystemCall
+     * 
+     * @param entryLevelSystemCall
+     * @param containerToApply
+     */
+    private void applyContextToSystemCall(EntryLevelSystemCall entryLevelSystemCall,
+            CharacteristicContainer containerToApply) {
+        Logger.infoDetailed("\nAppling Context to SystemCall: " + entryLevelSystemCall.getEntityName());
+        Logger.infoDetailed(entryLevelSystemCall.getEntityName());
+        OperationProvidedRole opr = entryLevelSystemCall.getProvidedRole_EntryLevelSystemCall();
+        Logger.infoDetailed(opr.getEntityName());
+        OperationSignature op = entryLevelSystemCall.getOperationSignature__EntryLevelSystemCall();
+        Logger.infoDetailed(op.getEntityName());
 
         // Find Component by iterating connectors, check outer role with system call
         // Still pass operation signature to know which function is called
@@ -99,99 +134,151 @@ public class ContextHandler {
             OperationProvidedRole opr2 = connector.getOuterProvidedRole_ProvidedDelegationConnector();
 
             if (assemblyAbs.isOperationProvidedRoleMatch(opr, opr2)) {
-                MyLogger.info(connector.getAssemblyContext_ProvidedDelegationConnector().getEntityName());
+                Logger.infoDetailed(connector.getAssemblyContext_ProvidedDelegationConnector().getEntityName());
                 AssemblyContext ac = connector.getAssemblyContext_ProvidedDelegationConnector();
                 RepositoryComponent rc = ac.getEncapsulatedComponent__AssemblyContext();
-                MyLogger.info(rc.getEntityName());
-                if (rc instanceof BasicComponent) {
-                    applyContextsToBasicComponent(ac, (BasicComponent) rc, op, containerToApply);
-                } else {
-                    // TODO other cases
-                    MyLogger.error("TODO!!!");
-                }
+                Logger.infoDetailed(rc.getEntityName());
+                applyContextToRepositoryComponent(rc, ac, op, containerToApply);
             }
         }
     }
 
-    // Seach for operationSignature in BasicComponent, and apply Contexts of
-    // CharacteristicsContainer
-    public void applyContextsToBasicComponent(AssemblyContext bcac, BasicComponent bc, OperationSignature op,
-            CharacteristicContainer umcc) {
-        for (ServiceEffectSpecification seff : bc.getServiceEffectSpecifications__BasicComponent()) {
-            MyLogger.info(seff.getDescribedService__SEFF().getEntityName());
-            if (seff.getDescribedService__SEFF() == op) {
-                MyLogger.info("MATCH");
+    /**
+     * Handling to differentiate between different repositoryComponent types
+     * 
+     * Parameters only needed for calls to different sub-functions
+     * 
+     * @param repositoryComponent
+     * @param assemblyContext
+     * @param operationSignature
+     * @param containerToApply
+     */
+    private void applyContextToRepositoryComponent(RepositoryComponent repositoryComponent,
+            AssemblyContext assemblyContext, OperationSignature operationSignature,
+            CharacteristicContainer containerToApply) {
+        if (repositoryComponent instanceof BasicComponent) {
+            applyContextsToBasicComponent(assemblyContext, (BasicComponent) repositoryComponent, operationSignature,
+                    containerToApply);
+        } else {
+            // TODO other cases
+            Logger.error("TODO!!!");
+        }
+
+    }
+
+    /**
+     * Applies Context to internal and external actions in this basicComponent
+     * 
+     * Internal actions need to match operationSignature
+     * 
+     * External Actions need assemblyContext to find correct called other components
+     * 
+     * @param assemblyContext
+     * @param basicComponent
+     * @param operationSignature
+     * @param containerToApply
+     */
+    private void applyContextsToBasicComponent(AssemblyContext assemblyContext, BasicComponent basicComponent,
+            OperationSignature operationSignature, CharacteristicContainer containerToApply) {
+        for (ServiceEffectSpecification seff : basicComponent.getServiceEffectSpecifications__BasicComponent()) {
+            Logger.infoDetailed(seff.getDescribedService__SEFF().getEntityName());
+            if (seff.getDescribedService__SEFF() == operationSignature) {
+                Logger.infoDetailed("MATCH");
 
                 // TODO instance of. other cases allowed?
                 ResourceDemandingSEFF rdSeff = (ResourceDemandingSEFF) seff;
 
                 // Get all internal actions, and check applied data processing
-                for (AbstractAction aa : rdSeff.getSteps_Behaviour()) {
-                    if (aa instanceof InternalAction) {
-                        applyContextsToInternalCall((InternalAction) aa, bc, op, umcc);
-                    } else if (aa instanceof ExternalCallAction) {
-                        applyContextsToExternalCall((ExternalCallAction) aa, bcac, umcc);
+                for (AbstractAction action : rdSeff.getSteps_Behaviour()) {
+                    if (action instanceof InternalAction) {
+                        // Name for eventually newly created containers
+                        String name = basicComponent.getEntityName() + "_" + operationSignature.getEntityName();
+
+                        applyContextsToInternalCall((InternalAction) action, containerToApply, name);
+                    } else if (action instanceof ExternalCallAction) {
+                        applyContextsToExternalCall((ExternalCallAction) action, assemblyContext, containerToApply);
                     }
                 }
             }
         }
     }
 
-    public void applyContextsToExternalCall(ExternalCallAction eca, AssemblyContext bcac,
-            CharacteristicContainer umcc) {
-        MyLogger.info(eca.getEntityName());
-        MyLogger.info(eca.getCalledService_ExternalService().getEntityName());
-        OperationSignature op2 = eca.getCalledService_ExternalService();
-        OperationRequiredRole orr = eca.getRole_ExternalService();
-        MyLogger.info(orr.getEntityName());
-        MyLogger.info(orr.getRequiredInterface__OperationRequiredRole().getEntityName());
+    /**
+     * Applies context to externalAction
+     * 
+     * External actions calls another (basic) component. Find match with assemblyContext, and then
+     * call applyContextsToBasicComponent for that component
+     * 
+     * @param externalAction
+     * @param assemblyContext
+     * @param containerToApply
+     */
+    private void applyContextsToExternalCall(ExternalCallAction externalAction, AssemblyContext assemblyContext,
+            CharacteristicContainer containerToApply) {
+        Logger.infoDetailed(externalAction.getEntityName());
+        Logger.infoDetailed(externalAction.getCalledService_ExternalService().getEntityName());
+        OperationSignature op2 = externalAction.getCalledService_ExternalService();
+        OperationRequiredRole orr = externalAction.getRole_ExternalService();
+        Logger.infoDetailed(orr.getEntityName());
+        Logger.infoDetailed(orr.getRequiredInterface__OperationRequiredRole().getEntityName());
 
         for (AssemblyConnector connector : assemblyAbs.getListOfAssemblyConnectors()) {
-            MyLogger.info(connector.getEntityName());
+            Logger.infoDetailed(connector.getEntityName());
             AssemblyConnector ac = (AssemblyConnector) connector;
             AssemblyContext acProvide = ac.getProvidingAssemblyContext_AssemblyConnector();
             AssemblyContext acRequire = ac.getRequiringAssemblyContext_AssemblyConnector();
-            if (acRequire.equals(bcac)) {
+            if (acRequire.equals(assemblyContext)) {
                 OperationRequiredRole orr2 = ac.getRequiredRole_AssemblyConnector();
                 if (orr2.equals(orr)) {
                     RepositoryComponent rc = acProvide.getEncapsulatedComponent__AssemblyContext();
-                    MyLogger.info(rc.getEntityName());
+                    Logger.infoDetailed(rc.getEntityName());
                     if (rc instanceof BasicComponent) {
-                        applyContextsToBasicComponent(acProvide, (BasicComponent) rc, op2, umcc);
+                        applyContextsToBasicComponent(acProvide, (BasicComponent) rc, op2, containerToApply);
                     }
                 }
             }
         }
     }
 
-    public void applyContextsToInternalCall(InternalAction internalAction, BasicComponent bc, OperationSignature op,
-            CharacteristicContainer umcc) {
+    /**
+     * Applies context to internalAction
+     * 
+     * Check if stereotype is applied to internalAction.
+     * 
+     * Call applyContext for container from appliedStereotype and with containerToApply
+     * 
+     * @param internalAction
+     * @param containerToApply
+     * @param nameForNewContainers
+     */
+    private void applyContextsToInternalCall(InternalAction internalAction, CharacteristicContainer containerToApply,
+            String nameForNewContainers) {
         boolean isStereoTypeApplied = false;
         for (Stereotype stereotype : StereotypeAPI.getAppliedStereotypes(internalAction)) {
-            MyLogger.info(stereotype.getName());
+            Logger.infoDetailed(stereotype.getName());
             if ((stereotype.getName().equals("DataProcessingSpecification"))) {
                 isStereoTypeApplied = true;
 
                 Collection<EStructuralFeature> list = StereotypeAPI.getParameters(stereotype);
                 for (EStructuralFeature esf : list) {
                     String name = esf.getName();
-                    MyLogger.info(name);
+                    Logger.infoDetailed(name);
                     Object obj = StereotypeAPI.getTaggedValue(internalAction, name, stereotype.getName());
                     if (obj != null) {
-                        MyLogger.info(obj.getClass().getSimpleName());
+                        Logger.infoDetailed(obj.getClass().getSimpleName());
                         DataProcessingContainer dpc = (DataProcessingContainer) obj;
 
                         CharacteristicContainer cc2 = dataSpecAbs
                                 .getCharacteristicContainerForDataProcessingContainer(dpc);
 
                         if (cc2 == null) {
-                            MyLogger.error("DataProcessingContainer(" + dpc.getEntityName()
+                            Logger.error("DataProcessingContainer(" + dpc.getEntityName()
                                     + ") couldn't be matched to CharacteristicContainer");
                         } else {
-                            applyContexts(cc2, umcc);
+                            applyContexts(cc2, containerToApply);
                         }
                     } else {
-                        MyLogger.error("Stereotype applied put no dataprocessing container selected!");
+                        Logger.error("Stereotype applied put no dataprocessing container selected!");
                     }
                 }
             }
@@ -199,12 +286,10 @@ public class ContextHandler {
 
         if (!isStereoTypeApplied) {
             if (settings.isApplyStereotype()) {
-                MyLogger.info2("APPLY STEREOTYPE TO " + internalAction.getEntityName());
+                Logger.info2("APPLY STEREOTYPE TO " + internalAction.getEntityName());
 
-                // Name for newly created containers
-                String name = bc.getEntityName() + "_" + op.getEntityName();
-
-                DataProcessingContainer newDPC = dataSpecAbs.createNewCharacteristicPairForInternalAction(name);
+                DataProcessingContainer newDPC = dataSpecAbs
+                        .createNewCharacteristicPairForInternalAction(nameForNewContainers);
 
                 // Make sure Profile is applied on this resource / in repository
                 if (!ProfileAPI.isProfileApplied(internalAction.eResource(), "DataProcessing")) {
@@ -217,15 +302,19 @@ public class ContextHandler {
                         "dataProcessingContainer");
 
                 // Call same function again, since stereotype now applied
-                applyContextsToInternalCall(internalAction, bc, op, umcc);
+                applyContextsToInternalCall(internalAction, containerToApply, nameForNewContainers);
             }
         }
     }
 
-    // Apply Contexts to CharacteristicContainer related to dpc, from reference
-    // CharacteristicContainer cc
-    public void applyContexts(CharacteristicContainer applyTo, CharacteristicContainer applyFrom) {
-        MyLogger.info("\nApply Context");
+    /**
+     * Applies context from one container to the other one.
+     * 
+     * @param applyTo
+     * @param applyFrom
+     */
+    private void applyContexts(CharacteristicContainer applyTo, CharacteristicContainer applyFrom) {
+        Logger.infoDetailed("\nApply Context");
         new DataProcessingPrinter(dataSpecAbs.getDataSpec()).printDataProcessing();
 
         // Iterate all context, apply each to dpc
@@ -234,7 +323,7 @@ public class ContextHandler {
             for (ContextCharacteristic c2 : dataSpecAbs.getContextCharacteristic(applyTo)) {
                 // if (c.getCharacteristicType() == c2.getCharacteristicType()) {
                 if (c.getCharacteristicType().getId().equalsIgnoreCase(c2.getCharacteristicType().getId())) {
-                    MyLogger.info2("Apply:" + applyFrom.getEntityName() + " to " + applyTo.getEntityName());
+                    Logger.info2("Apply:" + applyFrom.getEntityName() + " to " + applyTo.getEntityName());
                     dataSpecAbs.applyContext(c2, c);
                     contextApplied = true;
                 }
@@ -243,7 +332,7 @@ public class ContextHandler {
             // Context wasn't applied because no matching contexttype found -> create context type
             if (!contextApplied) {
                 if (settings.isCreateContextCharacteristic()) {
-                    MyLogger.info2("CREATE NEW CONTEXTCONTAINER");
+                    Logger.info2("CREATE NEW CONTEXTCONTAINER");
                     dataSpecAbs.createContextCharacteristic(applyTo, c);
                 }
             }

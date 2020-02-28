@@ -17,7 +17,7 @@ import mainhandler.ModelAbstraction;
 import mainhandler.ModelHandler;
 import setting.ContextMaster;
 import setting.Settings;
-import util.MyLogger;
+import util.Logger;
 import util.Util;
 
 public class usecase4 {
@@ -27,10 +27,10 @@ public class usecase4 {
     @Test
     public void test() {
         final String currentPath = Util.getCurrentDir();
-        MyLogger.info(currentPath);
+        Logger.infoDetailed(currentPath);
 
         String dataPath = currentPath + "\\..\\" + "usecase4";
-        MyLogger.info(dataPath);
+        Logger.infoDetailed(dataPath);
 
         // TODO :Usecase for false
         Settings settings = new Settings(true, ContextMaster.Characterizable, false, false);

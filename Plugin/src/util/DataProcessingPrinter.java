@@ -11,6 +11,12 @@ import org.palladiosimulator.pcm.dataprocessing.dynamicextension.context.Context
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.context.ContextCharacteristic;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.context.ContextCharacteristicType;
 
+/**
+ * Helperclass to print DataProcessing Information
+ * 
+ * @author Thomas Lieb
+ *
+ */
 public class DataProcessingPrinter {
     private DataSpecification dataSpecification;
 
@@ -18,23 +24,26 @@ public class DataProcessingPrinter {
         this.dataSpecification = dataSpecification;
     }
 
+    /**
+     * Prints information about CharacteristicContainer and CharacteristicTypeContainer
+     */
     public void printDataProcessing() {
-        MyLogger.info("\n" + dataSpecification.toString());
+        Logger.infoDetailed("\n" + dataSpecification.toString());
         printCharacteristicContainer();
         printCharacteristicTypeContainer();
-        MyLogger.info("");
+        Logger.infoDetailed("");
     }
 
     private void printCharacteristicContainer() {
-        MyLogger.info("Char: " + dataSpecification.getCharacteristicContainer().size());
+        Logger.infoDetailed("Char: " + dataSpecification.getCharacteristicContainer().size());
         for (CharacteristicContainer cc : dataSpecification.getCharacteristicContainer()) {
-            MyLogger.info("Name:" + cc.getEntityName());
+            Logger.infoDetailed("Name:" + cc.getEntityName());
             for (Characteristic c : cc.getOwnedCharacteristics()) {
-                MyLogger.info("Type:" + c.getCharacteristicType());
+                Logger.infoDetailed("Type:" + c.getCharacteristicType());
 
                 if (c instanceof ContextCharacteristic) {
                     for (Context context : ((ContextCharacteristic) c).getContext()) {
-                        MyLogger.info("Context:" + context.getEntityName());
+                        Logger.infoDetailed("Context:" + context.getEntityName());
                     }
                 }
             }
@@ -42,26 +51,26 @@ public class DataProcessingPrinter {
     }
 
     private void printCharacteristicTypeContainer() {
-        MyLogger.info("CharType: " + dataSpecification.getCharacteristicTypeContainers().size());
+        Logger.infoDetailed("CharType: " + dataSpecification.getCharacteristicTypeContainers().size());
         for (CharacteristicTypeContainer ctc : dataSpecification.getCharacteristicTypeContainers()) {
 
-            MyLogger.info("Characteristics: " + ctc.getCharacteristicTypes().size());
+            Logger.infoDetailed("Characteristics: " + ctc.getCharacteristicTypes().size());
             for (CharacteristicType ct : ctc.getCharacteristicTypes()) {
-                MyLogger.info(ct.getEntityName());
+                Logger.infoDetailed(ct.getEntityName());
 
                 if (ct instanceof ContextCharacteristicType) {
                     ContextCharacteristicType cct = (ContextCharacteristicType) ct;
                     for (Context context : (cct.getContext())) {
-                        MyLogger.info("Context:" + context.getEntityName());
+                        Logger.infoDetailed("Context:" + context.getEntityName());
                     }
                 }
             }
 
-            MyLogger.info("Enumerations: " + ctc.getEnumerations().size());
+            Logger.infoDetailed("Enumerations: " + ctc.getEnumerations().size());
             for (Enumeration enumer : ctc.getEnumerations()) {
-                MyLogger.info(enumer.getEntityName());
+                Logger.infoDetailed(enumer.getEntityName());
                 for (EnumCharacteristicLiteral lit : enumer.getLiterals()) {
-                    MyLogger.info("Name: " + lit.getEntityName());
+                    Logger.infoDetailed("Name: " + lit.getEntityName());
                 }
             }
         }

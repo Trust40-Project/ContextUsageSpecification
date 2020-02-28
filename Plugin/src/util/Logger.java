@@ -1,13 +1,19 @@
 package util;
 
-public class MyLogger {
+/**
+ * Logger Class to print to system.out
+ * 
+ * @author Thomas Lieb
+ *
+ */
+public class Logger {
 
-    private static MyLogger instance = null;
+    private static Logger instance = null;
     private static boolean isActive = true;
 
-    public static MyLogger getInstance() {
+    public static Logger getInstance() {
         if (instance == null) {
-            instance = new MyLogger();
+            instance = new Logger();
         }
         return instance;
     }
@@ -16,14 +22,15 @@ public class MyLogger {
         getInstance().println2(string);
     }
 
-    public static void info(String string) {
+    public static void infoDetailed(String string) {
         getInstance().println(string);
     }
 
     private void println(String string) {
         // LOGGER.info(string);
-        if (isActive)
+        if (isActive) {
             System.out.println(string);
+        }
     }
 
     public static void info2(String string) {

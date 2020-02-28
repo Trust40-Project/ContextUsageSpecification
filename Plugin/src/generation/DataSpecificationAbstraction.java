@@ -13,8 +13,14 @@ import org.palladiosimulator.pcm.dataprocessing.dynamicextension.context.Context
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.context.ContextCharacteristic;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.context.ContextFactory;
 
-import util.MyLogger;
+import util.Logger;
 
+/**
+ * Abstraction for handling related to DataSpecification
+ * 
+ * @author Thomas Lieb
+ *
+ */
 public class DataSpecificationAbstraction {
     private final DataSpecification dataSpec;
 
@@ -74,8 +80,8 @@ public class DataSpecificationAbstraction {
 
     public void applyContext(ContextCharacteristic applyTo, ContextCharacteristic applyFrom) {
         applyTo.getContext().addAll(applyFrom.getContext());
-        MyLogger.info2("Contexts applied:" + applyFrom.getContext().toString());
-        MyLogger.info2("Contexts after:" + applyTo.getContext().toString());
+        Logger.info2("Contexts applied:" + applyFrom.getContext().toString());
+        Logger.info2("Contexts after:" + applyTo.getContext().toString());
     }
 
     public void createContextCharacteristic(CharacteristicContainer container,

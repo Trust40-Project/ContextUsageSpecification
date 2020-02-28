@@ -13,8 +13,14 @@ import org.palladiosimulator.pcm.usagemodel.ScenarioBehaviour;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 import org.palladiosimulator.pcm.usagemodel.UsageScenario;
 
-import util.MyLogger;
+import util.Logger;
 
+/**
+ * Abstraction for handling related to UsageModel
+ * 
+ * @author Thomas Lieb
+ *
+ */
 public class UsageModelAbstraction {
     private final UsageModel usageModel;
     private final DataSpecificationAbstraction dataSpecAbs;
@@ -35,11 +41,11 @@ public class UsageModelAbstraction {
         CharacteristicContainer containerCharacterizable = null;
 
         ScenarioBehaviour scenarioBehaviour = getScenarioBehaviour();
-        MyLogger.info(scenarioBehaviour.getEntityName());
+        Logger.infoDetailed(scenarioBehaviour.getEntityName());
 
         // Iterate applied stereotypes, look for Characterizable
         for (Stereotype stereotype : StereotypeAPI.getAppliedStereotypes(scenarioBehaviour)) {
-            MyLogger.info(stereotype.getName());
+            Logger.infoDetailed(stereotype.getName());
 
             if ((stereotype.getName().equals("Characterizable"))) {
                 for (EStructuralFeature structuralFeature : StereotypeAPI.getParameters(stereotype)) {
@@ -48,7 +54,7 @@ public class UsageModelAbstraction {
                     if (obj instanceof CharacteristicContainer) {
                         containerCharacterizable = (CharacteristicContainer) obj;
                     } else {
-                        MyLogger.error("CharacteristicContainer not selected");
+                        Logger.error("CharacteristicContainer not selected");
                     }
                 }
             }
@@ -81,11 +87,11 @@ public class UsageModelAbstraction {
                         DataProcessingContainer dpc = (DataProcessingContainer) obj;
                         chracteristicContainer = dataSpecAbs.getCharacteristicContainerForDataProcessingContainer(dpc);
                         if (chracteristicContainer == null) {
-                            MyLogger.error("DataProcessingContainer(" + dpc.getEntityName()
+                            Logger.error("DataProcessingContainer(" + dpc.getEntityName()
                                     + ") couldn't be matched to CharacteristicContainer");
                         }
                     } else {
-                        MyLogger.error("CharacteristicContainer not selected");
+                        Logger.error("CharacteristicContainer not selected");
                     }
                 }
             }

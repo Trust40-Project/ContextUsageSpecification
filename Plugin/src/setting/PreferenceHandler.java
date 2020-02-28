@@ -12,16 +12,25 @@ import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
 import util.Util;
 
+/**
+ * Creates preference page for plugin in preferences
+ * 
+ * This class is referenced in plugin.xml
+ * 
+ * @author Thomas Lieb
+ *
+ */
 public class PreferenceHandler extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
     // The plug-in ID
-    public static final String PLUGIN_ID = "ContextUsageSpecification";
+    private static final String PLUGIN_ID = "ContextUsageSpecification";
     private static final IPreferenceStore PREF_STORE = new ScopedPreferenceStore(InstanceScope.INSTANCE, PLUGIN_ID);
 
-    public static String namePath = "0";
-    public static String nameDataprocessing = "1";
-    public static String nameUsageModel = "2";
-    public static String nameAssembly = "3";
-    public static String nameRepositoryModel = "4";
+    // Static names/ids for the different fields
+    private static String namePath = "0";
+    private static String nameDataprocessing = "1";
+    private static String nameUsageModel = "2";
+    private static String nameAssembly = "3";
+    private static String nameRepositoryModel = "4";
     private static String nameContextMaster = "5";
     private static String nameCreateContextCharacteristic = "6";
     private static String nameApplyStereotype = "7";
@@ -36,6 +45,12 @@ public class PreferenceHandler extends FieldEditorPreferencePage implements IWor
         setDefault();
     }
 
+    /**
+     * Set default values
+     * 
+     * This function is separate because default values also needed if preferences where not
+     * initialised yet by eclipse environment
+     */
     public static void setDefault() {
         // Default values
         PREF_STORE.setDefault(namePath, Util.getCurrentDir());
@@ -50,6 +65,9 @@ public class PreferenceHandler extends FieldEditorPreferencePage implements IWor
         setDescription("Preference page for the plugin " + "");
     }
 
+    /**
+     * Create Fields in PreferencePage
+     */
     @Override
     protected void createFieldEditors() {
         Composite parent = getFieldEditorParent();
@@ -106,6 +124,7 @@ public class PreferenceHandler extends FieldEditorPreferencePage implements IWor
     }
 
     public static Settings getSettingsFromPreferences() {
+        // TODO logic
         ContextMaster master = ContextMaster.Combined;
 
         Boolean createContextCharacteristic;

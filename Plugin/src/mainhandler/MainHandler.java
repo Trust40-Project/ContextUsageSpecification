@@ -11,6 +11,14 @@ import generation.ContextHandler;
 import setting.PreferenceHandler;
 import setting.Settings;
 
+/**
+ * Handles to basic logic of plugin
+ * 
+ * 1. Loading preferences 2. Loading models 3. Execute functionality 4. Save models
+ * 
+ * @author Thomas Lieb
+ *
+ */
 public class MainHandler {
 
     public void execute(String dataPath) {

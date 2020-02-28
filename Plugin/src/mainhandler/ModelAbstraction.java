@@ -2,6 +2,14 @@ package mainhandler;
 
 import setting.PreferenceHandler;
 
+/**
+ * Abstracts paths to the 4 different models
+ * 
+ * Needed to enable different handling in tests
+ * 
+ * @author Thomas Lieb
+ *
+ */
 public class ModelAbstraction {
     private String projectPath;
 
