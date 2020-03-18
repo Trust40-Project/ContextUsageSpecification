@@ -124,8 +124,12 @@ public class PreferenceHandler extends FieldEditorPreferencePage implements IWor
     }
 
     public static Settings getSettingsFromPreferences() {
-        // TODO logic
         ContextMaster master = ContextMaster.Combined;
+        if (PREF_STORE.getString(nameContextMaster).equalsIgnoreCase("Characterizable")) {
+        	master = ContextMaster.Characterizable;
+        } else if (PREF_STORE.getString(nameContextMaster).equalsIgnoreCase("DataProcessing")) {
+        	master = ContextMaster.DataProcessing;
+        }
 
         Boolean createContextCharacteristic;
         if (PREF_STORE.getString(nameCreateContextCharacteristic).equalsIgnoreCase("true")) {

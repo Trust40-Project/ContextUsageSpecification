@@ -27,15 +27,16 @@ public class UsageModelAbstraction {
         this.dataSpecAbs = dataSpecAbs;
     }
 
-    private ScenarioBehaviour getScenarioBehaviour() {
-        // TODO select correct model, or make loop
-        UsageScenario us = usageModel.getUsageScenario_UsageModel().get(0);
-        ScenarioBehaviour sb = us.getScenarioBehaviour_UsageScenario();
-        return sb;
+    public EList<ScenarioBehaviour> getListofScenarioBehaviour() {
+        EList<ScenarioBehaviour> list = new BasicEList<>();
+        for(UsageScenario usageScenario : usageModel.getUsageScenario_UsageModel()) {
+        	ScenarioBehaviour scenarioBehaviour = usageScenario.getScenarioBehaviour_UsageScenario();
+        	list.add(scenarioBehaviour);
+        }
+        return list;
     }
 
-    public CharacteristicContainer getAppliedCharacterizableContainer() {
-        ScenarioBehaviour scenarioBehaviour = getScenarioBehaviour();
+    public CharacteristicContainer getAppliedCharacterizableContainer(ScenarioBehaviour scenarioBehaviour) {
         Logger.infoDetailed(scenarioBehaviour.getEntityName());
 
         CharacteristicContainer containerCharacterizable = MdsdAbstraction
@@ -44,9 +45,9 @@ public class UsageModelAbstraction {
         return containerCharacterizable;
     }
 
-    public EList<EntryLevelSystemCall> getListOfEntryLevelSystemCalls() {
+    public EList<EntryLevelSystemCall> getListOfEntryLevelSystemCalls(ScenarioBehaviour scenarioBehaviour) {
         EList<EntryLevelSystemCall> list = new BasicEList<>();
-        for (AbstractUserAction abstractUserAction : getScenarioBehaviour().getActions_ScenarioBehaviour()) {
+        for (AbstractUserAction abstractUserAction : scenarioBehaviour.getActions_ScenarioBehaviour()) {
             if (abstractUserAction instanceof EntryLevelSystemCall) {
                 list.add((EntryLevelSystemCall) abstractUserAction);
             }

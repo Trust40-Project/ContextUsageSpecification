@@ -20,6 +20,7 @@ import org.palladiosimulator.pcm.seff.ResourceDemandingSEFF;
 import org.palladiosimulator.pcm.seff.ServiceEffectSpecification;
 import org.palladiosimulator.pcm.system.System;
 import org.palladiosimulator.pcm.usagemodel.EntryLevelSystemCall;
+import org.palladiosimulator.pcm.usagemodel.ScenarioBehaviour;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
 import setting.Settings;
@@ -63,19 +64,22 @@ public class ContextHandler {
      * Entrypoint for mainhandler
      */
     public void execute() {
-        applyContextToAllSystemCalls();
+    	for(ScenarioBehaviour scenarioBehaviour : usageModelAbs.getListofScenarioBehaviour()) {
+            applyContextToAllSystemCalls(scenarioBehaviour);
+    	}
     }
 
     /**
      * Iterate all SystemCalls, call applyContextToSystemCall for each one with matching
      * characteristicContainer according to settings
+     * @param scenarioBehaviour 
      */
-    private void applyContextToAllSystemCalls() {
+    private void applyContextToAllSystemCalls(ScenarioBehaviour scenarioBehaviour) {
         Logger.infoDetailed("\nAppling Context to all methods");
 
-        CharacteristicContainer containerCharacterizable = usageModelAbs.getAppliedCharacterizableContainer();
+        CharacteristicContainer containerCharacterizable = usageModelAbs.getAppliedCharacterizableContainer(scenarioBehaviour);
 
-        for (EntryLevelSystemCall systemCall : usageModelAbs.getListOfEntryLevelSystemCalls()) {
+        for (EntryLevelSystemCall systemCall : usageModelAbs.getListOfEntryLevelSystemCalls(scenarioBehaviour)) {
             CharacteristicContainer containerDataProcessing = usageModelAbs.getAppliedContainer(systemCall);
 
             // Depending on ContextMaster a different characteristicContainer is used to be applied
@@ -83,8 +87,6 @@ public class ContextHandler {
             case Characterizable:
                 if (containerCharacterizable != null) {
                     applyContextToSystemCall(systemCall, containerCharacterizable);
-                } else {
-                    Logger.error("Stereotype Characterizable not applied");
                 }
                 break;
             case DataProcessing:
