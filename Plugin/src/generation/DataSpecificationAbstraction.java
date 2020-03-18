@@ -80,8 +80,8 @@ public class DataSpecificationAbstraction {
 
     public void applyContext(ContextCharacteristic applyTo, ContextCharacteristic applyFrom) {
         applyTo.getContext().addAll(applyFrom.getContext());
-        Logger.info2("Contexts applied:" + applyFrom.getContext().toString());
-        Logger.info2("Contexts after:" + applyTo.getContext().toString());
+        Logger.info("Contexts applied:" + applyFrom.getContext().toString());
+        Logger.info("Contexts after:" + applyTo.getContext().toString());
     }
 
     public void createContextCharacteristic(CharacteristicContainer container,

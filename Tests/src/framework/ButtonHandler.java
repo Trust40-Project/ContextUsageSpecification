@@ -27,7 +27,7 @@ public class ButtonHandler extends AbstractHandler {
     public Object execute(ExecutionEvent event) throws ExecutionException {
         Objects.requireNonNull(event);
 
-        Logger.infoDetailed("Tests-Start");
+        Logger.info("Tests-Start");
         Logger.disable();
 
         // Needed here to ensure default values are set if PreferencesPage has never been opened
@@ -47,7 +47,7 @@ public class ButtonHandler extends AbstractHandler {
         junit.run(usecase8.class);
 
         Logger.enable();
-        Logger.infoDetailed("Tests-End");
+        Logger.info("Tests-End");
 
         return null;
     }

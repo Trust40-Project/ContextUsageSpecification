@@ -265,7 +265,7 @@ public class ContextHandler {
         } else {
             // Check setting if stereotype should be applied and containers be created
             if (settings.isApplyStereotype()) {
-                Logger.info2("APPLY STEREOTYPE TO " + internalAction.getEntityName());
+                Logger.info("APPLY STEREOTYPE TO " + internalAction.getEntityName());
 
                 DataProcessingContainer newDPC = dataSpecAbs
                         .createNewCharacteristicPairForInternalAction(nameForNewContainers);
@@ -294,7 +294,7 @@ public class ContextHandler {
             for (ContextCharacteristic c2 : dataSpecAbs.getContextCharacteristic(applyTo)) {
                 // if (c.getCharacteristicType() == c2.getCharacteristicType()) {
                 if (c.getCharacteristicType().getId().equalsIgnoreCase(c2.getCharacteristicType().getId())) {
-                    Logger.info2("Apply:" + applyFrom.getEntityName() + " to " + applyTo.getEntityName());
+                    Logger.info("Apply:" + applyFrom.getEntityName() + " to " + applyTo.getEntityName());
                     dataSpecAbs.applyContext(c2, c);
                     contextApplied = true;
                 }
@@ -303,7 +303,7 @@ public class ContextHandler {
             // Context wasn't applied because no matching contexttype found -> create context type
             if (!contextApplied) {
                 if (settings.isCreateContextCharacteristic()) {
-                    Logger.info2("CREATE NEW CONTEXTCONTAINER");
+                    Logger.info("CREATE NEW CONTEXTCONTAINER");
                     dataSpecAbs.createContextCharacteristic(applyTo, c);
                 }
             }
