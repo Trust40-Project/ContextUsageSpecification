@@ -3,6 +3,7 @@ package generation;
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.EList;
 import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
+import org.palladiosimulator.pcm.core.composition.ComposedStructure;
 import org.palladiosimulator.pcm.core.composition.Connector;
 import org.palladiosimulator.pcm.core.composition.ProvidedDelegationConnector;
 import org.palladiosimulator.pcm.repository.OperationProvidedRole;
@@ -17,13 +18,17 @@ import org.palladiosimulator.pcm.system.System;
 public class AssemblyAbstraction {
     private final System system;
 
-    /**
+	/**
      * Constructor
      * 
      * @param system
      */
     public AssemblyAbstraction(final System system) {
         this.system = system;
+    }
+    
+    public System getSystem() {
+        return system;
     }
 
     public boolean isOperationProvidedRoleMatch(OperationProvidedRole target, OperationProvidedRole opr) {
@@ -34,9 +39,9 @@ public class AssemblyAbstraction {
         return target.getId().equalsIgnoreCase(opr.getId());
     }
 
-    public EList<ProvidedDelegationConnector> getListOfProvidedDelegationConnector() {
+    public EList<ProvidedDelegationConnector> getListOfProvidedDelegationConnector(ComposedStructure compositeStructure) {
         EList<ProvidedDelegationConnector> list = new BasicEList<>();
-        for (Connector connector : system.getConnectors__ComposedStructure()) {
+        for (Connector connector : compositeStructure.getConnectors__ComposedStructure()) {
             if (connector instanceof ProvidedDelegationConnector) {
                 list.add((ProvidedDelegationConnector) connector);
             }
@@ -44,9 +49,9 @@ public class AssemblyAbstraction {
         return list;
     }
 
-    public EList<AssemblyConnector> getListOfAssemblyConnectors() {
+    public EList<AssemblyConnector> getListOfAssemblyConnectors(ComposedStructure compositeStructure) {
         EList<AssemblyConnector> list = new BasicEList<>();
-        for (Connector connector : system.getConnectors__ComposedStructure()) {
+        for (Connector connector : compositeStructure.getConnectors__ComposedStructure()) {
             if (connector instanceof AssemblyConnector) {
                 list.add((AssemblyConnector) connector);
             }

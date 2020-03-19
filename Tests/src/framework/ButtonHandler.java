@@ -19,6 +19,7 @@ import tests.usecase6b;
 import tests.usecase6c;
 import tests.usecase7;
 import tests.usecase8;
+import tests.usecase9;
 import util.Logger;
 
 public class ButtonHandler extends AbstractHandler {
@@ -45,6 +46,7 @@ public class ButtonHandler extends AbstractHandler {
         junit.run(usecase6c.class);
         junit.run(usecase7.class);
         junit.run(usecase8.class);
+        junit.run(usecase9.class);
 
         Logger.enable();
         Logger.info("Tests-End");

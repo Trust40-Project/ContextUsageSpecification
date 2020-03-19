@@ -2,12 +2,14 @@ package generation;
 
 import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
+import org.palladiosimulator.pcm.core.composition.ComposedStructure;
 import org.palladiosimulator.pcm.core.composition.ProvidedDelegationConnector;
 import org.palladiosimulator.pcm.dataprocessing.dataprocessing.DataSpecification;
 import org.palladiosimulator.pcm.dataprocessing.dataprocessing.characteristics.CharacteristicContainer;
 import org.palladiosimulator.pcm.dataprocessing.dataprocessing.processing.DataProcessingContainer;
 import org.palladiosimulator.pcm.dataprocessing.dynamicextension.context.ContextCharacteristic;
 import org.palladiosimulator.pcm.repository.BasicComponent;
+import org.palladiosimulator.pcm.repository.CompositeComponent;
 import org.palladiosimulator.pcm.repository.OperationProvidedRole;
 import org.palladiosimulator.pcm.repository.OperationRequiredRole;
 import org.palladiosimulator.pcm.repository.OperationSignature;
@@ -124,20 +126,31 @@ public class ContextHandler {
         OperationSignature op = entryLevelSystemCall.getOperationSignature__EntryLevelSystemCall();
         Logger.infoDetailed(op.getEntityName());
 
-        // Find Component by iterating connectors, check outer role with system call
-        // Still pass operation signature to know which function is called
-        for (ProvidedDelegationConnector connector : assemblyAbs.getListOfProvidedDelegationConnector()) {
-            OperationProvidedRole opr2 = connector.getOuterProvidedRole_ProvidedDelegationConnector();
+        applyContextsToComposedStructure(assemblyAbs.getSystem(),opr,op,containerToApply);
+    }
+    
+    private void applyContextsToComposedStructure(ComposedStructure composedStructure,
+            OperationProvidedRole operationProvidedRole, 
+            OperationSignature operationSignature, 
+            CharacteristicContainer containerToApply) {
+        
+    	// Find Component by iterating connectors, 
+    	// Check outer role with passed operationProvidedRole
+        // If match, pass inner role 
+        for (ProvidedDelegationConnector connector : assemblyAbs.getListOfProvidedDelegationConnector(composedStructure)) {
+            OperationProvidedRole outerRole = connector.getOuterProvidedRole_ProvidedDelegationConnector();
+            OperationProvidedRole innerRole = connector.getInnerProvidedRole_ProvidedDelegationConnector();
 
-            if (assemblyAbs.isOperationProvidedRoleMatch(opr, opr2)) {
+            if (assemblyAbs.isOperationProvidedRoleMatch(operationProvidedRole, outerRole)) {
                 Logger.infoDetailed(connector.getAssemblyContext_ProvidedDelegationConnector().getEntityName());
                 AssemblyContext ac = connector.getAssemblyContext_ProvidedDelegationConnector();
                 RepositoryComponent rc = ac.getEncapsulatedComponent__AssemblyContext();
                 Logger.infoDetailed(rc.getEntityName());
-                applyContextToRepositoryComponent(rc, ac, op, containerToApply);
+                applyContextToRepositoryComponent(rc, ac, innerRole, operationSignature, containerToApply);
             }
         }
     }
+    	 
 
     /**
      * Handling to differentiate between different repositoryComponent types
@@ -146,16 +159,21 @@ public class ContextHandler {
      * 
      * @param repositoryComponent
      * @param assemblyContext
+     * @param operationProvidedRole 
      * @param operationSignature
      * @param containerToApply
      */
     private void applyContextToRepositoryComponent(RepositoryComponent repositoryComponent,
-            AssemblyContext assemblyContext, OperationSignature operationSignature,
+            AssemblyContext assemblyContext, OperationProvidedRole operationProvidedRole, OperationSignature operationSignature,
             CharacteristicContainer containerToApply) {
         if (repositoryComponent instanceof BasicComponent) {
             applyContextsToBasicComponent(assemblyContext, (BasicComponent) repositoryComponent, operationSignature,
                     containerToApply);
-        } else {
+        } 
+        else if (repositoryComponent instanceof CompositeComponent) {
+            applyContextsToComposedStructure((CompositeComponent) repositoryComponent, operationProvidedRole, operationSignature, containerToApply);
+        }        
+        else {
             // TODO other cases
             Logger.error("TODO!!!");
         }
@@ -218,7 +236,7 @@ public class ContextHandler {
         Logger.infoDetailed(orr.getEntityName());
         Logger.infoDetailed(orr.getRequiredInterface__OperationRequiredRole().getEntityName());
 
-        for (AssemblyConnector connector : assemblyAbs.getListOfAssemblyConnectors()) {
+        for (AssemblyConnector connector : assemblyAbs.getListOfAssemblyConnectors(assemblyAbs.getSystem())) {
             Logger.infoDetailed(connector.getEntityName());
             AssemblyConnector ac = (AssemblyConnector) connector;
             AssemblyContext acProvide = ac.getProvidingAssemblyContext_AssemblyConnector();
