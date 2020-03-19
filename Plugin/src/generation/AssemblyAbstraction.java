@@ -6,7 +6,9 @@ import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
 import org.palladiosimulator.pcm.core.composition.ComposedStructure;
 import org.palladiosimulator.pcm.core.composition.Connector;
 import org.palladiosimulator.pcm.core.composition.ProvidedDelegationConnector;
+import org.palladiosimulator.pcm.core.composition.RequiredDelegationConnector;
 import org.palladiosimulator.pcm.repository.OperationProvidedRole;
+import org.palladiosimulator.pcm.repository.OperationRequiredRole;
 import org.palladiosimulator.pcm.system.System;
 
 /**
@@ -38,12 +40,26 @@ public class AssemblyAbstraction {
 
         return target.getId().equalsIgnoreCase(opr.getId());
     }
+    
+    public boolean isOperationRequiredRoleMatch(OperationRequiredRole target, OperationRequiredRole opr) {
+        return target.getId().equalsIgnoreCase(opr.getId());
+    }
 
     public EList<ProvidedDelegationConnector> getListOfProvidedDelegationConnector(ComposedStructure compositeStructure) {
         EList<ProvidedDelegationConnector> list = new BasicEList<>();
         for (Connector connector : compositeStructure.getConnectors__ComposedStructure()) {
             if (connector instanceof ProvidedDelegationConnector) {
                 list.add((ProvidedDelegationConnector) connector);
+            }
+        }
+        return list;
+    }
+
+    public EList<RequiredDelegationConnector> getListOfRequiredDelegationConnector(ComposedStructure compositeStructure) {
+        EList<RequiredDelegationConnector> list = new BasicEList<>();
+        for (Connector connector : compositeStructure.getConnectors__ComposedStructure()) {
+            if (connector instanceof RequiredDelegationConnector) {
+                list.add((RequiredDelegationConnector) connector);
             }
         }
         return list;

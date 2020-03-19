@@ -20,14 +20,14 @@ import setting.Settings;
 import util.Logger;
 import util.Util;
 
-public class usecase9 {
-
+public class usecase10 {
+	
     @Test
     public void test() {
         final String currentPath = Util.getCurrentDir();
         Logger.infoDetailed(currentPath);
 
-        String dataPath = currentPath + "\\..\\" + "usecase9";
+        String dataPath = currentPath + "\\..\\" + "usecase10";
         Logger.infoDetailed(dataPath);
 
         Settings settings = new Settings(false, ContextMaster.Characterizable, false, false);
@@ -43,19 +43,31 @@ public class usecase9 {
 
         CharacteristicContainer sys = dataSpecAbs.getCharacteristicContainerByName("SystemCall1");
         CharacteristicContainer method = dataSpecAbs.getCharacteristicContainerByName("method1");
+        CharacteristicContainer method2_bc2 = dataSpecAbs.getCharacteristicContainerByName("method2_BC2");
+        CharacteristicContainer method2_bc3 = dataSpecAbs.getCharacteristicContainerByName("method2_BC3");
         assertNotNull(sys);
         assertNotNull(method);
+        assertNotNull(method2_bc2);
+        assertNotNull(method2_bc3);
 
         Context c_sys = dataSpecAbs.getContextByName(sys, "PUBLIC");
         Context c_method = dataSpecAbs.getContextByName(method, "PUBLIC");
+        Context c_method2_bc2 = dataSpecAbs.getContextByName(method2_bc2, "PUBLIC");
+        Context c_method2_bc3 = dataSpecAbs.getContextByName(method2_bc3, "PUBLIC");
         assertNotNull(c_sys);
         assertNull(c_method);
+        assertNull(c_method2_bc2);
+        assertNull(c_method2_bc3);
 
         ch.execute();
 
         c_sys = dataSpecAbs.getContextByName(sys, "PUBLIC");
         c_method = dataSpecAbs.getContextByName(method, "PUBLIC");
+        c_method2_bc2 = dataSpecAbs.getContextByName(method2_bc2, "PUBLIC");
+        c_method2_bc3 = dataSpecAbs.getContextByName(method2_bc3, "PUBLIC");
         assertNotNull(c_sys);
         assertNotNull(c_method);
+        assertNull(c_method2_bc2);
+        assertNotNull(c_method2_bc3);
     }
 }

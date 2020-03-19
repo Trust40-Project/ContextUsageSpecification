@@ -10,6 +10,8 @@ import org.junit.runner.JUnitCore;
 
 import setting.PreferenceHandler;
 import tests.usecase1;
+import tests.usecase10;
+import tests.usecase11;
 import tests.usecase2;
 import tests.usecase3;
 import tests.usecase4;
@@ -43,6 +45,8 @@ public class ButtonHandler extends AbstractHandler {
         junit.run(usecase7.class);
         junit.run(usecase8.class);
         junit.run(usecase9.class);
+        junit.run(usecase10.class);
+        junit.run(usecase11.class);
 
         Logger.enable();
         Logger.info("Tests-End");
