@@ -21,8 +21,6 @@ import util.Logger;
 import util.Util;
 
 public class usecase4 {
-    // usecase1 applies context of systemcall to method
-    // TODO restructure
 
     @Test
     public void test() {
@@ -32,7 +30,6 @@ public class usecase4 {
         String dataPath = currentPath + "\\..\\" + "usecase4";
         Logger.infoDetailed(dataPath);
 
-        // TODO :Usecase for false
         Settings settings = new Settings(true, ContextMaster.Characterizable, false, false);
 
         ModelHandler modelloader = new ModelHandler(new ModelAbstraction(dataPath));

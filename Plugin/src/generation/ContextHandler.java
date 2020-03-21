@@ -23,6 +23,7 @@ import org.palladiosimulator.pcm.seff.ExternalCallAction;
 import org.palladiosimulator.pcm.seff.InternalAction;
 import org.palladiosimulator.pcm.seff.ResourceDemandingSEFF;
 import org.palladiosimulator.pcm.seff.ServiceEffectSpecification;
+import org.palladiosimulator.pcm.subsystem.SubSystem;
 import org.palladiosimulator.pcm.system.System;
 import org.palladiosimulator.pcm.usagemodel.EntryLevelSystemCall;
 import org.palladiosimulator.pcm.usagemodel.ScenarioBehaviour;
@@ -44,7 +45,7 @@ public class ContextHandler {
     private final Settings settings;
     private final DataSpecificationAbstraction dataSpecAbs;
     private final UsageModelAbstraction usageModelAbs;
-    private final Repository repo;
+    private final Repository repo; //currently not used
     private final AssemblyAbstraction assemblyAbs;
 
     /**
@@ -115,7 +116,7 @@ public class ContextHandler {
     }
 
     /**
-     * Applies context from containerToApply to BasicComponent called by entryLevelSystemCall
+     * Calls applyContextsToComposedStructure with parameters from systemcall
      * 
      * @param entryLevelSystemCall
      * @param containerToApply
@@ -132,7 +133,18 @@ public class ContextHandler {
         EList<AssemblyContext> hierarchy = new BasicEList<AssemblyContext>();
         applyContextsToComposedStructure(assemblyAbs.getSystem(), hierarchy, opr,op,containerToApply);
     }
-    
+
+
+    /**
+     * Search in provided delegation connectors of this composed structure for a match with operationProvidedRole
+     * If found, and matching component to hierarchy and call applyContextToRepositoryComponent
+     * 
+     * @param composedStructure
+     * @param hierarchy
+     * @param operationProvidedRole
+     * @param operationSignature
+     * @param containerToApply
+     */
     private void applyContextsToComposedStructure(ComposedStructure composedStructure,
             EList<AssemblyContext> hierarchy, OperationProvidedRole operationProvidedRole, 
             OperationSignature operationSignature, 
@@ -186,10 +198,12 @@ public class ContextHandler {
         } 
         else if (repositoryComponent instanceof CompositeComponent) {
             applyContextsToComposedStructure((CompositeComponent) repositoryComponent, hierarchy, operationProvidedRole, operationSignature, containerToApply);
-        }        
+        }   
+        else if (repositoryComponent instanceof SubSystem) {
+            applyContextsToComposedStructure((SubSystem) repositoryComponent, hierarchy, operationProvidedRole, operationSignature, containerToApply);
+        }          
         else {
-            // TODO other cases
-            Logger.error("TODO!!!");
+            Logger.error("Currently no handling implemented for RepositoryComponent("+ repositoryComponent.getId() + ")");
         }
 
     }
@@ -237,8 +251,7 @@ public class ContextHandler {
     /**
      * Applies context to externalAction
      * 
-     * External actions calls another (basic) component. Find match with assemblyContext, and then
-     * call applyContextsToBasicComponent for that component
+     * External actions calls another component. Call searchForMatchingExternalComponent
      * 
      * @param externalAction
      * @param hierarchy
@@ -255,6 +268,17 @@ public class ContextHandler {
         searchForMatchingExternalComponent(hierarchy, requiredRole, externalSignature,containerToApply);
     }
     
+    /**
+     * Search in current composed structure (parent of current assembly context) for a matching outgoing connecter.
+     * 
+     * If the matching connector is of type requiring delegation (means outgoing of this composed structure),
+     * recursive call with adapted parameters (search in composed structure one assembly level higher for match)
+     * 
+     * @param hierarchy
+     * @param requiredRole
+     * @param externalSignature
+     * @param containerToApply
+     */
     private void searchForMatchingExternalComponent(EList<AssemblyContext> hierarchy,
            OperationRequiredRole requiredRole, OperationSignature externalSignature, CharacteristicContainer containerToApply) {
     	    	

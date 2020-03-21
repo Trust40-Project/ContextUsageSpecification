@@ -21,9 +21,7 @@ import util.Logger;
 import util.Util;
 
 public class usecase1 {
-    // usecase1 applies context of systemcall to method
-    // TODO restructure
-
+	
     @Test
     public void test() {
         final String currentPath = Util.getCurrentDir();

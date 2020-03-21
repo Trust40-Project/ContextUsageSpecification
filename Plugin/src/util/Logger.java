@@ -12,12 +12,20 @@ public class Logger {
     private static boolean isActive = true;
 	private static boolean isDetailed = false;
 
-    public static Logger getInstance() {
+	public static Logger getInstance() {
         if (instance == null) {
             instance = new Logger();
         }
         return instance;
     }
+
+    public static void setActive(boolean isActive) {
+		Logger.isActive = isActive;
+	}
+
+	public static void setDetailed(boolean isDetailed) {
+		Logger.isDetailed = isDetailed;
+	}
 
     public static void error(String string) {
         getInstance().printError(string);
@@ -48,12 +56,4 @@ public class Logger {
         	}
         }
     }
-
-    public static void disable() {
-        isActive = false;
-    };
-
-    public static void enable() {
-        isActive = true;
-    };
 }

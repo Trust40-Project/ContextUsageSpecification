@@ -3,8 +3,12 @@
 <plugin>
    <extension
          point="org.eclipse.ui.commands">
+      <category
+            id="category"
+            name="Key Model">
+      </category>
       <command
-            categoryId="d"
+            categoryId="category"
             id="d"
             name="tests">
       </command>

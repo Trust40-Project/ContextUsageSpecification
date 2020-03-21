@@ -3,8 +3,12 @@
 <plugin>   
 	<extension
          point="org.eclipse.ui.commands">
+      <category
+            id="category"
+            name="Key Model">
+      </category>
       <command
-            categoryId="t"
+            categoryId="category"
             name="context"
             id="t">
       </command>
@@ -13,7 +17,7 @@
          point="org.eclipse.ui.handlers">
       <handler
             class="mainhandler.ButtonHandler"
-            commandId="commands.t">
+            commandId="execute">
       </handler>
    </extension>
    <extension
@@ -25,10 +29,10 @@
                label="ContextUsageSpecification"
                mnemonic="M">
             <command
-                  commandId="commands.t"
+                  commandId="execute"
                   id="t"
                   mnemonic="S"
-                  tooltip="asd">
+                  tooltip="Execute contextUsageSpecification">
             </command>
          </menu>
       </menuContribution>
